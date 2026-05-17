@@ -165,6 +165,10 @@
     .timing-summary { grid-template-columns: 1fr 1fr; }
     .timing-card .num { font-size: 18px; }
 
+    /* Performer checkboxes: stack vertically on mobile */
+    .performer-checkboxes { flex-direction: column; gap: 8px; }
+    .performer-checkboxes label { min-height: 44px; font-size: 16px; }
+
     /* Setlist output */
     .set-song { padding: 10px 12px; }
     .set-song-title { font-size: 13px; }
@@ -206,7 +210,7 @@
 <header>
   <h1>🎤 Three <span>Amigos</span> — Set List Creator</h1>
   <div class="header-right">
-    <div class="version-badge">v<span>0.71</span> &nbsp;·&nbsp; May 17, 2026</div>
+    <div class="version-badge">v<span>0.72</span> &nbsp;·&nbsp; May 17, 2026</div>
     <div class="performer-pills">
       <span class="pill albert">Albert</span>
       <span class="pill jim">Jim</span>
@@ -217,8 +221,8 @@
 
 <nav>
   <button class="active" onclick="showTab('library')">📚 Song Library</button>
-  <button onclick="showTab('generator')">🎵 Setlist Generator</button>
   <button onclick="showTab('shows')">🎭 Show History</button>
+  <button onclick="showTab('generator')">🎵 Setlist Generator</button>
 </nav>
 
 <main>
