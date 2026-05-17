@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Three Amigos — Set List Creator</title>
+<style>
+  :root {
+    --bg: #0f0f14;
+    --surface: #1a1a24;
+    --surface2: #22222f;
+    --border: #2e2e40;
+    --text: #e8e8f0;
+    --muted: #8888a8;
+    --albert: #4a9eff;
+    --albert-bg: rgba(74,158,255,0.12);
+    --jim: #4ecb71;
+    --jim-bg: rgba(78,203,113,0.12);
+    --shane: #f5924a;
+    --shane-bg: rgba(245,146,74,0.12);
+    --duet: #c678dd;
+    --duet-bg: rgba(198,120,221,0.12);
+    --accent: #4a9eff;
+    --danger: #e06c75;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; }
+
+  /* Header */
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+  header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+  header h1 span { color: var(--albert); }
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .version-badge { font-size: 11px; font-weight: 600; color: var(--muted); background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 3px 9px; letter-spacing: 0.04em; white-space: nowrap; }
+  .version-badge span { color: var(--accent); }
+  .performer-pills { display: flex; gap: 8px; }
+  .pill { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+  .pill.albert { background: var(--albert-bg); color: var(--albert); border: 1px solid var(--albert); }
+  .pill.jim { background: var(--jim-bg); color: var(--jim); border: 1px solid var(--jim); }
+  .pill.shane { background: var(--shane-bg); color: var(--shane); border: 1px solid var(--shane); }
+
+  /* Tabs */
+  nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; gap: 0; }
+  nav button { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; font-weight: 600; padding: 14px 20px; border-bottom: 2px solid transparent; transition: all 0.2s; }
+  nav button:hover { color: var(--text); }
+  nav button.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* Main */
+  main { padding: 24px; max-width: 1200px; margin: 0 auto; }
+
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+  .card h2 { font-size: 14px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; }
+
+  /* Filters */
+  .filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
+  .filters input, .filters select { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; padding: 8px 14px; outline: none; }
+  .filters input { flex: 1; min-width: 200px; }
+  .filters input:focus, .filters select:focus { border-color: var(--accent); }
+  .filters select option { background: var(--surface2); }
+
+  /* Stats bar */
+  .stats-bar { display: flex; gap: 20px; margin-bottom: 16px; flex-wrap: wrap; }
+  .stat { font-size: 13px; color: var(--muted); }
+  .stat strong { color: var(--text); }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead th { background: var(--surface2); color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; padding: 10px 14px; text-align: left; text-transform: uppercase; cursor: pointer; white-space: nowrap; user-select: none; }
+  thead th:hover { color: var(--text); }
+  thead th.sorted { color: var(--accent); }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  tbody tr:hover { background: var(--surface2); }
+  tbody td { padding: 10px 14px; vertical-align: middle; }
+  .song-title { font-weight: 600; }
+  .song-artist { color: var(--muted); font-size: 13px; }
+  .times-badge { background: var(--surface2); border-radius: 20px; display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 10px; }
+  .tbd { color: var(--muted); font-size: 12px; }
+  .performer-tag { border-radius: 6px; display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 8px; white-space: nowrap; }
+  .performer-tag.Albert { background: var(--albert-bg); color: var(--albert); }
+  .performer-tag.Jim { background: var(--jim-bg); color: var(--jim); }
+  .performer-tag.Shane { background: var(--shane-bg); color: var(--shane); }
+  .performer-tag.Duet { background: var(--duet-bg); color: var(--duet); }
+  .decade-tag { background: var(--surface2); border-radius: 4px; color: var(--muted); font-size: 11px; padding: 2px 7px; }
+
+  /* Generator */
+  .gen-grid { display: grid; grid-template-columns: 340px 1fr; gap: 20px; }
+  @media (max-width: 800px) { .gen-grid { grid-template-columns: 1fr; } }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+  .form-group input, .form-group select { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 15px; padding: 10px 14px; width: 100%; outline: none; }
+  .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+  .btn { background: var(--accent); border: none; border-radius: 8px; color: #fff; cursor: pointer; font-size: 14px; font-weight: 700; padding: 12px 24px; width: 100%; transition: opacity 0.2s; }
+  .btn:hover { opacity: 0.85; }
+  .btn.secondary { background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
+  .btn-row { display: flex; gap: 10px; }
+  .timing-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .timing-card { background: var(--surface2); border-radius: 8px; padding: 12px 16px; text-align: center; }
+  .timing-card .num { color: var(--accent); font-size: 22px; font-weight: 700; }
+  .timing-card .lbl { color: var(--muted); font-size: 11px; font-weight: 600; text-transform: uppercase; margin-top: 2px; }
+  .setlist-output { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 0; overflow: hidden; }
+  .set-block { border-bottom: 1px solid var(--border); }
+  .set-block:last-child { border-bottom: none; }
+  .set-header { align-items: center; background: var(--surface2); display: flex; justify-content: space-between; padding: 10px 16px; }
+  .set-header span { font-size: 13px; font-weight: 700; }
+  .set-header .set-time { color: var(--muted); font-size: 12px; }
+  .set-song { align-items: center; border-bottom: 1px solid rgba(46,46,64,0.5); display: flex; gap: 10px; padding: 9px 16px; }
+  .set-song:last-child { border-bottom: none; }
+  .set-num { color: var(--muted); font-size: 12px; min-width: 22px; }
+  .set-song-info { flex: 1; }
+  .set-song-title { font-size: 14px; font-weight: 600; }
+  .set-song-artist { color: var(--muted); font-size: 12px; }
+  .set-song-dur { color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .break-block { align-items: center; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border); display: flex; gap: 8px; padding: 8px 16px; }
+  .break-block span { color: var(--muted); font-size: 13px; }
+  .empty-state { color: var(--muted); font-size: 14px; padding: 40px; text-align: center; }
+  .performer-checkboxes { display: flex; gap: 16px; flex-wrap: wrap; }
+  .performer-checkboxes label { align-items: center; cursor: pointer; display: flex; gap: 6px; font-size: 14px; }
+  .performer-checkboxes input[type=checkbox] { accent-color: var(--accent); }
+  .note { background: rgba(74,158,255,0.08); border: 1px solid rgba(74,158,255,0.2); border-radius: 8px; color: var(--muted); font-size: 12px; line-height: 1.6; padding: 10px 14px; margin-top: 12px; }
+  .print-btn { background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); cursor: pointer; font-size: 12px; padding: 4px 12px; }
+  .print-btn:hover { color: var(--text); border-color: var(--text); }
+  @media print {
+    header, nav, .card:not(#setlist-card), .gen-left { display: none !important; }
+    body { background: #fff; color: #000; }
+    .setlist-output { border: none; }
+    .set-header { background: #eee; }
+  }
+
+  /* ── Mobile Responsive ── */
+  @media (max-width: 600px) {
+    /* Header: stack vertically, hide pills */
+    header { flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px 16px; }
+    .header-right { width: 100%; justify-content: space-between; }
+    .performer-pills { display: none; }
+    header h1 { font-size: 17px; }
+
+    /* Nav: horizontally scrollable, tighter padding */
+    nav { padding: 0 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; flex-shrink: 0; }
+    nav button { font-size: 13px; padding: 12px 14px; white-space: nowrap; min-height: 44px; }
+
+    /* Main padding */
+    main { padding: 12px; }
+
+    /* Cards */
+    .card { padding: 14px; }
+
+    /* Filters: stack vertically */
+    .filters { flex-direction: column; gap: 8px; }
+    .filters input, .filters select { min-width: unset; width: 100%; font-size: 16px; min-height: 44px; }
+
+    /* Stats bar: wrap tighter */
+    .stats-bar { gap: 10px; }
+    .stat { font-size: 12px; }
+
+    /* Table: hide lower-priority columns on small screens */
+    table { font-size: 13px; }
+    thead th, tbody td { padding: 9px 10px; }
+    .col-genre, .col-bpm { display: none; }
+
+    /* Generator form */
+    .form-group input, .form-group select { font-size: 16px; min-height: 44px; }
+    .btn { min-height: 48px; font-size: 15px; }
+    .timing-summary { grid-template-columns: 1fr 1fr; }
+    .timing-card .num { font-size: 18px; }
+
+    /* Setlist output */
+    .set-song { padding: 10px 12px; }
+    .set-song-title { font-size: 13px; }
+
+    /* Show History: single column grid */
+    .show-songs-grid { grid-template-columns: 1fr; }
+    .show-selector { gap: 6px; }
+    .show-btn { min-width: unset; flex: 1 1 calc(50% - 6px); min-height: 44px; }
+    .show-info-meta { gap: 10px; }
+  }
+
+  /* Shows Tab */
+  .show-selector { display: flex; gap: 8px; flex-wrap: wrap; }
+  .show-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--muted); cursor: pointer; font-size: 12px; font-weight: 600; padding: 8px 14px; transition: all 0.2s; text-align: left; min-width: 130px; }
+  .show-btn:hover { border-color: var(--accent); color: var(--text); }
+  .show-btn.active { background: var(--albert-bg); border-color: var(--accent); color: var(--accent); }
+  .show-btn .show-num { font-size: 15px; font-weight: 700; display: block; }
+  .show-btn .show-date { font-size: 11px; display: block; margin-top: 2px; opacity: 0.8; }
+  .show-info-header { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 20px; }
+  .show-info-title { font-size: 19px; font-weight: 700; margin-bottom: 6px; }
+  .show-info-meta { color: var(--muted); font-size: 13px; display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+  .show-info-meta .meta-pill { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 2px 10px; font-size: 12px; }
+  .show-songs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .show-performer-section { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .show-perf-header { padding: 10px 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+  .show-perf-header.Albert { background: var(--albert-bg); color: var(--albert); border-bottom: 1px solid rgba(74,158,255,0.3); }
+  .show-perf-header.Jim { background: var(--jim-bg); color: var(--jim); border-bottom: 1px solid rgba(78,203,113,0.3); }
+  .show-perf-header.Shane { background: var(--shane-bg); color: var(--shane); border-bottom: 1px solid rgba(245,146,74,0.3); }
+  .show-perf-header.Duet { background: var(--duet-bg); color: var(--duet); border-bottom: 1px solid rgba(198,120,221,0.3); }
+  .show-song-item { border-bottom: 1px solid var(--border); padding: 7px 16px; }
+  .show-song-item:last-child { border-bottom: none; }
+  .show-song-item .s-title { font-size: 13px; font-weight: 600; }
+  .show-song-item .s-artist { color: var(--muted); font-size: 12px; }
+  .show-song-item .s-note { color: var(--duet); font-size: 11px; font-style: italic; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎤 Three <span>Amigos</span> — Set List Creator</h1>
+  <div class="header-right">
+    <div class="version-badge">v<span>0.7</span> &nbsp;·&nbsp; May 17, 2026</div>
+    <div class="performer-pills">
+      <span class="pill albert">Albert</span>
+      <span class="pill jim">Jim</span>
+      <span class="pill shane">Shane</span>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <button class="active" onclick="showTab('library')">📚 Song Library</button>
+  <button onclick="showTab('generator')">🎵 Setlist Generator</button>
+  <button onclick="showTab('shows')">🎭 Show History</button>
+</nav>
+
+<main>
+  <!-- LIBRARY TAB -->
+  <div id="tab-library">
+    <div class="card">
+      <div class="filters">
+        <input type="text" id="search" placeholder="Search songs or artists…" oninput="renderLibrary()">
+        <select id="filter-performer" onchange="renderLibrary()">
+          <option value="">All Performers</option>
+          <option value="Albert">Albert</option>
+          <option value="Jim">Jim</option>
+          <option value="Shane">Shane</option>
+          <option value="Duet">Duets / Group</option>
+        </select>
+        <select id="filter-genre" onchange="renderLibrary()">
+          <option value="">All Genres</option>
+          <option value="Country">Country</option>
+          <option value="Classic Rock">Classic Rock</option>
+          <option value="Rock">Rock</option>
+          <option value="80s Pop/Rock">80s Pop/Rock</option>
+          <option value="New Wave">New Wave</option>
+          <option value="R&B / Soul">R&amp;B / Soul</option>
+          <option value="Pop">Pop</option>
+          <option value="Blues Rock">Blues Rock</option>
+          <option value="Folk Rock">Folk Rock</option>
+          <option value="Alternative">Alternative</option>
+          <option value="Irish / Folk">Irish / Folk</option>
+        </select>
+        <select id="filter-decade" onchange="renderLibrary()">
+          <option value="">All Decades</option>
+          <option value="50s">50s</option>
+          <option value="60s">60s</option>
+          <option value="70s">70s</option>
+          <option value="80s">80s</option>
+          <option value="90s">90s</option>
+          <option value="00s">00s</option>
+          <option value="10s">10s</option>
+          <option value="20s">20s</option>
+        </select>
+      </div>
+      <div class="stats-bar" id="stats-bar"></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th onclick="sortBy('title')">Song ▾</th>
+              <th onclick="sortBy('artist')">Artist</th>
+              <th onclick="sortBy('performer')">Performer</th>
+              <th onclick="sortBy('genre')" class="col-genre">Genre</th>
+              <th onclick="sortBy('decade')">Decade</th>
+              <th onclick="sortBy('timesPerformed')" class="sorted">Plays ▾</th>
+              <th onclick="sortBy('duration')">Duration</th>
+              <th onclick="sortBy('bpm')" class="col-bpm">BPM</th>
+            </tr>
+          </thead>
+          <tbody id="library-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- GENERATOR TAB -->
+  <div id="tab-generator" style="display:none">
+    <div class="gen-grid">
+      <div class="gen-left">
+        <div class="card">
+          <h2>Show Settings</h2>
+          <div class="form-group">
+            <label>Total Show Duration (minutes)</label>
+            <input type="number" id="show-duration" value="180" min="60" max="480">
+          </div>
+          <div class="form-group">
+            <label>Number of Breaks</label>
+            <input type="number" id="break-count" value="3" min="0" max="10">
+          </div>
+          <div class="form-group">
+            <label>Break Duration (minutes each)</label>
+            <input type="number" id="break-duration" value="10" min="5" max="30">
+          </div>
+          <div class="form-group">
+            <label>Performers in this Show</label>
+            <div class="performer-checkboxes">
+              <label><input type="checkbox" id="p-albert" checked> <span style="color:var(--albert)">Albert</span></label>
+              <label><input type="checkbox" id="p-jim" checked> <span style="color:var(--jim)">Jim</span></label>
+              <label><input type="checkbox" id="p-shane" checked> <span style="color:var(--shane)">Shane</span></label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Avg Song Duration (minutes)</label>
+            <input type="number" id="avg-duration" value="3.5" min="2" max="6" step="0.5">
+            <div class="note">⏱ Until YouTube track lengths are loaded, the generator uses this estimated average. Update to match your typical song length.</div>
+          </div>
+          <div class="btn-row" style="margin-top:8px">
+            <button class="btn" onclick="generateSetlist()">Generate Setlist</button>
+            <button class="btn secondary" onclick="generateSetlist()">🔀 Shuffle</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="setlist-card">
+        <div class="card" id="timing-card" style="display:none">
+          <h2>Show Summary</h2>
+          <div class="timing-summary" id="timing-summary"></div>
+        </div>
+        <div class="card" id="output-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <h2 style="margin:0">Generated Setlist</h2>
+            <button class="print-btn" onclick="window.print()">🖨 Print</button>
+          </div>
+          <div class="setlist-output" id="setlist-output">
+            <div class="empty-state">Configure your show settings and click Generate Setlist to get started.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHOWS TAB -->
+  <div id="tab-shows" style="display:none">
+    <div class="card">
+      <h2>Previous Shows</h2>
+      <div class="show-selector" id="show-selector"></div>
+    </div>
+    <div id="show-detail"></div>
+  </div>
+</main>
+
+<script>
+// ═══════════════════════════════════════════
+// SONG DATA
+// ═══════════════════════════════════════════
+const songs = [
+  // ALBERT'S SONGS
+  { title: "Tempted", artist: "Marty Stuart", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 5, duration: null, bpm: null },
+  { title: "Dance the Night Away", artist: "The Mavericks", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 5, duration: null, bpm: null },
+  { title: "I Only Want to Be With You", artist: "Hootie & the Blowfish", performer: "Albert", genre: "Rock", decade: "90s", timesPerformed: 4, duration: null, bpm: null },
+  { title: "Bad Bad Leroy Brown", artist: "Jim Croce", performer: "Albert", genre: "Folk Rock", decade: "70s", timesPerformed: 4, duration: null, bpm: null },
+  { title: "The Breakup Song", artist: "The Greg Kihn Band", performer: "Albert", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 4, duration: null, bpm: null },
+  { title: "Rock This Town", artist: "Stray Cats", performer: "Albert", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 4, duration: null, bpm: null },
+  { title: "Suspicious Minds", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 4, duration: null, bpm: null },
+  { title: "Burning Love", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "70s", timesPerformed: 4, duration: null, bpm: null },
+  { title: "Pocket of a Clown", artist: "Dwight Yoakam", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 4, duration: null, bpm: null },
+  { title: "Rock Me Gently", artist: "Andy Kim", performer: "Albert", genre: "Pop", decade: "70s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "Spinning Wheel", artist: "Blood, Sweat & Tears", performer: "Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "Love Somebody", artist: "Morgan Wallen", performer: "Albert", genre: "Country", decade: "20s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "Small Town Saturday Night", artist: "Hal Ketchum", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "Chattahoochee", artist: "Alan Jackson", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "She's Got the Rhythm", artist: "Alan Jackson", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Treat Me Nice", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "50s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Wasn't That a Party", artist: "The Irish Rovers", performer: "Albert", genre: "Irish / Folk", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "We Just Disagree", artist: "Dave Mason", performer: "Albert", genre: "Classic Rock", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "The Love Boat Theme", artist: "Jack Jones", performer: "Albert", genre: "Pop", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Way Down", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Moody Blue", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Don't Pull Your Love", artist: "Hamilton, Joe Frank & Reynolds", performer: "Albert", genre: "Pop", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "867-5309/Jenny", artist: "Tommy Tutone", performer: "Albert", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Running Down a Dream", artist: "Tom Petty", performer: "Albert", genre: "Rock", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Little Less Conversation", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Devil Went Down to Georgia", artist: "Charlie Daniels Band", performer: "Albert", genre: "Country", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "You'll Never Find Another Love Like Mine", artist: "Lou Rawls", performer: "Albert", genre: "R&B / Soul", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "You Made Me So Very Happy", artist: "Blood, Sweat & Tears", performer: "Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Tainted Love", artist: "Soft Cell", performer: "Albert", genre: "New Wave", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Don't You Forget About Me", artist: "Simple Minds", performer: "Albert", genre: "New Wave", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Should I Stay or Should I Go", artist: "The Clash", performer: "Albert", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Abracadabra", artist: "Steve Miller Band", performer: "Albert", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "You Spin Me Round", artist: "Dead or Alive", performer: "Albert", genre: "New Wave", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Centerfold", artist: "J. Geils Band", performer: "Albert", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Hungry Like the Wolf", artist: "Duran Duran", performer: "Albert", genre: "New Wave", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "I Have to Say I Love You in a Song", artist: "Jim Croce", performer: "Albert", genre: "Folk Rock", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "I Just Can't Help Believing", artist: "Elvis Presley", performer: "Albert", genre: "Pop", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Sundown", artist: "Gordon Lightfoot", performer: "Albert", genre: "Folk Rock", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "In the Summertime", artist: "Mungo Jerry", performer: "Albert", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Losing My Religion", artist: "R.E.M.", performer: "Albert", genre: "Alternative", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "The Way", artist: "Fastball", performer: "Albert", genre: "Alternative", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Oh What a Thrill", artist: "The Mavericks", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Wonderwall", artist: "Oasis", performer: "Albert", genre: "Alternative", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Kentucky Rain", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "You Gave Me a Mountain", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Jane", artist: "Barenaked Ladies", performer: "Albert", genre: "Alternative", decade: "00s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "What a Crying Shame", artist: "The Mavericks", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Sweet Caroline (cover)", artist: "Neil Diamond", performer: "Albert", genre: "Pop", decade: "60s", timesPerformed: 1, duration: null, bpm: null, note: "Covered when Jim was absent — normally Jim's song" },
+  // empty placeholder to reach 49
+  { title: "In the Summertime", artist: "Mungo Jerry", performer: "Albert", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+
+  // JIM'S SONGS
+  { title: "Have You Ever Seen the Rain", artist: "Creedence Clearwater Revival", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 4, duration: null, bpm: null },
+  { title: "Hurt So Good", artist: "John Mellencamp", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 4, duration: null, bpm: null },
+  { title: "Sweet Caroline", artist: "Neil Diamond", performer: "Jim", genre: "Pop", decade: "60s", timesPerformed: 4, duration: null, bpm: null },
+  { title: "Friends in Low Places", artist: "Garth Brooks", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "Tennessee Whiskey", artist: "Chris Stapleton", performer: "Jim", genre: "Country", decade: "10s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "Take Me Home Country Roads", artist: "John Denver", performer: "Jim", genre: "Folk Rock", decade: "70s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "I Like It I Love It", artist: "Tim McGraw", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "Against the Wind", artist: "Bob Seger", performer: "Jim", genre: "Classic Rock", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Paper in Fire", artist: "John Mellencamp", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Good Ol' Boys (Dukes of Hazzard Theme)", artist: "Waylon Jennings", performer: "Jim", genre: "Country", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Bad Moon Rising", artist: "Creedence Clearwater Revival", performer: "Jim", genre: "Classic Rock", decade: "60s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Sweet Home Alabama", artist: "Lynyrd Skynyrd", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Brown Eyed Girl", artist: "Van Morrison", performer: "Jim", genre: "Classic Rock", decade: "60s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Take It Easy", artist: "Eagles", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "I Drink Alone", artist: "George Thorogood", performer: "Jim", genre: "Blues Rock", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Keep Your Hands to Yourself", artist: "Georgia Satellites", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Save Me", artist: "Jelly Roll", performer: "Jim", genre: "Country", decade: "20s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Something Like That", artist: "Tim McGraw", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Mountain Music", artist: "Alabama", performer: "Jim", genre: "Country", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "White Wedding", artist: "Billy Idol", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Twist and Shout", artist: "The Beatles", performer: "Jim", genre: "Classic Rock", decade: "60s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Mony Mony", artist: "Billy Idol", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Forever in Blue Jeans", artist: "Neil Diamond", performer: "Jim", genre: "Pop", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Cuts Like a Knife", artist: "Bryan Adams", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Cherry Bomb", artist: "John Mellencamp", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Power of Love", artist: "Huey Lewis & the News", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "You Give Love a Bad Name", artist: "Bon Jovi", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Fire Lake", artist: "Bob Seger", performer: "Jim", genre: "Classic Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Bad to the Bone", artist: "George Thorogood", performer: "Jim", genre: "Blues Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Mandy", artist: "Barry Manilow", performer: "Jim", genre: "Pop", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Desiree", artist: "Neil Diamond", performer: "Jim", genre: "Pop", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Brother Love's Travelling Salvation Show", artist: "Neil Diamond", performer: "Jim", genre: "Pop", decade: "60s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Looking Out My Back Door", artist: "Creedence Clearwater Revival", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Hotel California", artist: "Eagles", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Cherry Cherry", artist: "Neil Diamond", performer: "Jim", genre: "Pop", decade: "60s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Thank God I'm a Country Boy", artist: "John Denver", performer: "Jim", genre: "Country", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Simple Man", artist: "Lynyrd Skynyrd", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Mustang Sally", artist: "Wilson Pickett", performer: "Jim", genre: "R&B / Soul", decade: "60s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Calling Baton Rouge", artist: "Garth Brooks", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "God Bless Texas", artist: "Lee Ann Womack", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Fast As You", artist: "Dwight Yoakam", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Boot Scootin' Boogie", artist: "Brooks & Dunn", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+
+  // SHANE'S SONGS
+  { title: "How Do You Like Me Now", artist: "Toby Keith", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 4, duration: null, bpm: null },
+  { title: "Just Help Yourself", artist: "Tom Jones", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 4, duration: null, bpm: null },
+  { title: "We Were in Love", artist: "Toby Keith", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "Crocodile Rock", artist: "Elton John", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "Rave On", artist: "Buddy Holly", performer: "Shane", genre: "Classic Rock", decade: "50s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "Green Green Grass of Home", artist: "Tom Jones", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "You'll Always Be Loved By Me", artist: "Brooks & Dunn", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "Pride and Joy", artist: "Stevie Ray Vaughan", performer: "Shane", genre: "Blues Rock", decade: "80s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "Pretty Woman", artist: "Roy Orbison", performer: "Shane", genre: "Classic Rock", decade: "60s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "Hard Luck Woman", artist: "KISS", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "She's Not Cryin' Anymore", artist: "Billy Ray Cyrus", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "I Love a Rainy Night", artist: "Eddie Rabbitt", performer: "Shane", genre: "Country", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "If You Could Read My Mind", artist: "Gordon Lightfoot", performer: "Shane", genre: "Folk Rock", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Les Bicyclettes de Belsize", artist: "Engelbert Humperdinck", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "WKRP in Cincinnati Theme", artist: "Steve Carlisle", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Folsom Prison Blues", artist: "Johnny Cash", performer: "Shane", genre: "Country", decade: "50s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Another Somebody Done Somebody Wrong Song", artist: "B.J. Thomas", performer: "Shane", genre: "Country", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Midnight Special", artist: "Leadbelly", performer: "Shane", genre: "Folk Rock", decade: "60s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "All You Ever Do Is Bring Me Down", artist: "The Mavericks", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Guess That's Why They Call It the Blues", artist: "Elton John", performer: "Shane", genre: "Pop", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Quando Quando Quando", artist: "Engelbert Humperdinck", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Knock Three Times", artist: "Tony Orlando & Dawn", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "I'm Still Standing", artist: "Elton John", performer: "Shane", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Danny Boy", artist: "Traditional", performer: "Shane", genre: "Irish / Folk", decade: "60s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Stuck on You", artist: "Elvis Presley", performer: "Shane", genre: "Classic Rock", decade: "60s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Ring of Fire", artist: "Johnny Cash", performer: "Shane", genre: "Country", decade: "60s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "El Paso", artist: "Marty Robbins", performer: "Shane", genre: "Country", decade: "60s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "What Are You Doing Sunday", artist: "Dawn", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Walk of Life", artist: "Dire Straits", performer: "Shane", genre: "Classic Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "The Boys in the Bright White Sports Car", artist: "Trooper", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "You Might Think", artist: "The Cars", performer: "Shane", genre: "New Wave", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Dancing in the Dark", artist: "Bruce Springsteen", performer: "Shane", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Red Red Wine", artist: "UB40", performer: "Shane", genre: "Pop", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Footloose", artist: "Kenny Loggins", performer: "Shane", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "The Longest Time", artist: "Billy Joel", performer: "Shane", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Here for a Good Time", artist: "Trooper", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Authority Song", artist: "John Mellencamp", performer: "Shane", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Babe", artist: "Styx", performer: "Shane", genre: "Classic Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "You Got It", artist: "Roy Orbison", performer: "Shane", genre: "Classic Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Words", artist: "Bee Gees", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "How Deep Is Your Love", artist: "Bee Gees", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Before the Next Teardrop Falls", artist: "Freddy Fender", performer: "Shane", genre: "Country", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Stuck in the Middle With You", artist: "Stealers Wheel", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Hooked on a Feeling", artist: "Blue Swede", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Saturday Night", artist: "Bay City Rollers", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Maggie May", artist: "Rod Stewart", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Philadelphia Freedom", artist: "Elton John", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "She Ain't Crying Anymore", artist: "Billy Ray Cyrus", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "On the Dark Side", artist: "John Cafferty", performer: "Shane", genre: "Classic Rock", decade: "80s", timesPerformed: 1, duration: 177, bpm: null },
+  { title: "Summertime Blues", artist: "Eddie Cochran", performer: "Shane", genre: "Classic Rock", decade: "50s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "I Would Do Anything for Love", artist: "Meat Loaf", performer: "Shane", genre: "Classic Rock", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Walking in Memphis", artist: "Marc Cohn", performer: "Shane", genre: "R&B / Soul", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Downtown Train", artist: "Rod Stewart", performer: "Shane", genre: "Classic Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Rhythm of My Heart", artist: "Rod Stewart", performer: "Shane", genre: "Classic Rock", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Jump Around", artist: "House of Pain", performer: "Shane", genre: "Alternative", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "I'm Too Sexy", artist: "Right Said Fred", performer: "Shane", genre: "Pop", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Cotton Eye Joe", artist: "Rednex", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Livin' La Vida Loca", artist: "Ricky Martin", performer: "Shane", genre: "Pop", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Sacrifice", artist: "Elton John", performer: "Shane", genre: "Pop", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "The Way You Look Tonight", artist: "Elton John", performer: "Shane", genre: "Pop", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+
+  // DUETS & GROUP
+  { title: "If I Had a Million Dollars", artist: "Barenaked Ladies", performer: "Duet", performerDetail: "Shane & Albert", genre: "Alternative", decade: "90s", timesPerformed: 4, duration: null, bpm: null },
+  { title: "Handle with Care", artist: "Traveling Wilburys", performer: "Duet", performerDetail: "All Three", genre: "Classic Rock", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "I'm Gonna Be (500 Miles)", artist: "The Proclaimers", performer: "Duet", performerDetail: "Shane & Albert", genre: "Alternative", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Love Me Do", artist: "The Beatles", performer: "Duet", performerDetail: "Albert & Shane", genre: "Classic Rock", decade: "60s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "To All the Girls", artist: "Willie Nelson & Julio Iglesias", performer: "Duet", performerDetail: "Shane & Albert", genre: "Country", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "You Don't Bring Me Flowers", artist: "Neil Diamond & Barbra Streisand", performer: "Duet", performerDetail: "Jim & Albert", genre: "Pop", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "I Am a Man of Constant Sorrow", artist: "Soggy Bottom Boys", performer: "Duet", performerDetail: "All Three (Jim lead)", genre: "Folk Rock", decade: "00s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "End of the Line", artist: "Traveling Wilburys", performer: "Duet", performerDetail: "All Three", genre: "Classic Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
+];
+
+// De-duplicate (remove the accidental duplicate "In the Summertime" added as placeholder)
+const uniqueSongs = songs.filter((s, i, arr) =>
+  i === arr.findIndex(t => t.title === s.title && t.performer === s.performer)
+);
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let sortKey = 'timesPerformed';
+let sortDir = -1;
+
+// ═══════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════
+function showTab(tab) {
+  document.getElementById('tab-library').style.display = tab === 'library' ? '' : 'none';
+  document.getElementById('tab-generator').style.display = tab === 'generator' ? '' : 'none';
+  document.getElementById('tab-shows').style.display = tab === 'shows' ? '' : 'none';
+  document.querySelectorAll('nav button').forEach((b, i) => {
+    b.classList.toggle('active',
+      (tab === 'library' && i === 0) ||
+      (tab === 'generator' && i === 1) ||
+      (tab === 'shows' && i === 2)
+    );
+  });
+  if (tab === 'shows') renderShowSelector();
+}
+
+// ═══════════════════════════════════════════
+// SHOW HISTORY DATA
+// ═══════════════════════════════════════════
+const showsData = [
+  {
+    id: 1, date: "May 24, 2024", event: "70's Night", venue: "Bean and Olive",
+    performers: ["Albert", "Jim", "Shane"],
+    songs: {
+      Albert: [
+        {t:"Bad Bad Leroy Brown", a:"Jim Croce"}, {t:"Rock Me Gently", a:"Andy Kim"},
+        {t:"Spinning Wheel", a:"Blood, Sweat & Tears"}, {t:"We Just Disagree", a:"Dave Mason"},
+        {t:"The Love Boat Theme", a:"Jack Jones"}, {t:"Way Down", a:"Elvis Presley"},
+        {t:"Moody Blue", a:"Elvis Presley"}, {t:"Don't Pull Your Love", a:"Hamilton, Joe Frank & Reynolds"},
+        {t:"Devil Went Down to Georgia", a:"Charlie Daniels Band"},
+        {t:"I Have to Say I Love You in a Song", a:"Jim Croce"},
+        {t:"I Just Can't Help Believing", a:"Elvis Presley"},
+        {t:"Sundown", a:"Gordon Lightfoot"}, {t:"In the Summertime", a:"Mungo Jerry"},
+      ],
+      Jim: [
+        {t:"Have You Ever Seen the Rain", a:"CCR"}, {t:"Sweet Caroline", a:"Neil Diamond"},
+        {t:"Take Me Home Country Roads", a:"John Denver"},
+        {t:"Good Ol' Boys (Dukes of Hazzard Theme)", a:"Waylon Jennings"},
+        {t:"Brown Eyed Girl", a:"Van Morrison"}, {t:"Take It Easy", a:"Eagles"},
+        {t:"Mandy", a:"Barry Manilow"}, {t:"Desiree", a:"Neil Diamond"},
+        {t:"Brother Love's Travelling Salvation Show", a:"Neil Diamond"},
+        {t:"Looking Out My Back Door", a:"CCR"}, {t:"Hotel California", a:"Eagles"},
+        {t:"Cherry Cherry", a:"Neil Diamond"}, {t:"Thank God I'm a Country Boy", a:"John Denver"},
+        {t:"Simple Man", a:"Lynyrd Skynyrd"},
+      ],
+      Shane: [
+        {t:"Just Help Yourself", a:"Tom Jones"}, {t:"Crocodile Rock", a:"Elton John"},
+        {t:"Hard Luck Woman", a:"KISS"}, {t:"If You Could Read My Mind", a:"Gordon Lightfoot"},
+        {t:"Les Bicyclettes de Belsize", a:"Engelbert Humperdinck"},
+        {t:"WKRP in Cincinnati Theme", a:"Steve Carlisle"},
+        {t:"Another Somebody Done Somebody Wrong Song", a:"B.J. Thomas"},
+        {t:"Midnight Special", a:"Leadbelly (trad.)"}, {t:"Quando Quando Quando", a:"Engelbert Humperdinck"},
+        {t:"Words", a:"Bee Gees"}, {t:"How Deep Is Your Love", a:"Bee Gees"},
+        {t:"Before the Next Teardrop Falls", a:"Freddy Fender"},
+        {t:"Stuck in the Middle With You", a:"Stealers Wheel"},
+        {t:"Hooked on a Feeling", a:"Blue Swede"}, {t:"Saturday Night", a:"Bay City Rollers"},
+        {t:"Maggie May", a:"Rod Stewart"}, {t:"Philadelphia Freedom", a:"Elton John"},
+      ],
+      Duet: [
+        {t:"If I Had a Million Dollars", a:"Barenaked Ladies", n:"Shane & Albert"},
+      ]
+    }
+  },
+  {
+    id: 2, date: "Apr 12, 2025", event: "80's Night", venue: "Bean and Olive",
+    performers: ["Albert", "Jim", "Shane"],
+    songs: {
+      Albert: [
+        {t:"The Breakup Song", a:"The Greg Kihn Band"}, {t:"Rock This Town", a:"Stray Cats"},
+        {t:"867-5309/Jenny", a:"Tommy Tutone"}, {t:"Running Down a Dream", a:"Tom Petty"},
+        {t:"Tainted Love", a:"Soft Cell"}, {t:"Don't You Forget About Me", a:"Simple Minds"},
+        {t:"Should I Stay or Should I Go", a:"The Clash"}, {t:"Abracadabra", a:"Steve Miller Band"},
+        {t:"You Spin Me Round", a:"Dead or Alive"}, {t:"Centerfold", a:"J. Geils Band"},
+        {t:"Hungry Like the Wolf", a:"Duran Duran"},
+      ],
+      Jim: [
+        {t:"Hurt So Good", a:"John Mellencamp"}, {t:"Against the Wind", a:"Bob Seger"},
+        {t:"Paper in Fire", a:"John Mellencamp"}, {t:"I Drink Alone", a:"George Thorogood"},
+        {t:"Keep Your Hands to Yourself", a:"Georgia Satellites"},
+        {t:"Cuts Like a Knife", a:"Bryan Adams"}, {t:"Cherry Bomb", a:"John Mellencamp"},
+        {t:"Power of Love", a:"Huey Lewis & the News"}, {t:"You Give Love a Bad Name", a:"Bon Jovi"},
+        {t:"Fire Lake", a:"Bob Seger"}, {t:"Bad to the Bone", a:"George Thorogood"},
+      ],
+      Shane: [
+        {t:"Walk of Life", a:"Dire Straits"}, {t:"The Boys in the Bright White Sports Car", a:"Trooper"},
+        {t:"You Might Think", a:"The Cars"}, {t:"Dancing in the Dark", a:"Bruce Springsteen"},
+        {t:"Red Red Wine", a:"UB40"}, {t:"Footloose", a:"Kenny Loggins"},
+        {t:"The Longest Time", a:"Billy Joel"}, {t:"Here for a Good Time", a:"Trooper"},
+        {t:"Authority Song", a:"John Mellencamp"}, {t:"Babe", a:"Styx"},
+        {t:"You Got It", a:"Roy Orbison"}, {t:"I'm Still Standing", a:"Elton John"},
+      ],
+      Duet: [
+        {t:"I'm Gonna Be (500 Miles)", a:"The Proclaimers", n:"Shane & Albert"},
+        {t:"To All the Girls", a:"Willie Nelson & Julio Iglesias", n:"Shane & Albert"},
+        {t:"You Don't Bring Me Flowers", a:"Neil Diamond & Barbra Streisand", n:"Jim & Albert"},
+      ]
+    }
+  },
+  {
+    id: 3, date: "Mar 17, 2025", event: "Julie's St. Patrick's Day", venue: "Private event",
+    performers: ["Albert", "Shane"],
+    songs: {
+      Albert: [
+        {t:"Tempted", a:"Marty Stuart"}, {t:"Dance the Night Away", a:"The Mavericks"},
+        {t:"Bad Bad Leroy Brown", a:"Jim Croce"}, {t:"Suspicious Minds", a:"Elvis Presley"},
+        {t:"Burning Love", a:"Elvis Presley"}, {t:"Pocket of a Clown", a:"Dwight Yoakam"},
+        {t:"Small Town Saturday Night", a:"Hal Ketchum"}, {t:"Chattahoochee", a:"Alan Jackson"},
+        {t:"She's Got the Rhythm", a:"Alan Jackson"}, {t:"Treat Me Nice", a:"Elvis Presley"},
+        {t:"Wasn't That a Party", a:"The Irish Rovers"}, {t:"What a Crying Shame", a:"The Mavericks"},
+        {t:"Sweet Caroline (cover)", a:"Neil Diamond", n:"Jim was absent — Albert covered"},
+        {t:"Devil Went Down to Georgia", a:"Charlie Daniels Band"},
+      ],
+      Shane: [
+        {t:"How Do You Like Me Now", a:"Toby Keith"}, {t:"Just Help Yourself", a:"Tom Jones"},
+        {t:"Rave On", a:"Buddy Holly"}, {t:"Green Green Grass of Home", a:"Tom Jones"},
+        {t:"You'll Always Be Loved By Me", a:"Brooks & Dunn"}, {t:"Pride and Joy", a:"Stevie Ray Vaughan"},
+        {t:"Pretty Woman", a:"Roy Orbison"}, {t:"Folsom Prison Blues", a:"Johnny Cash"},
+        {t:"Danny Boy", a:"Traditional"}, {t:"Guess That's Why They Call It the Blues", a:"Elton John"},
+        {t:"She Ain't Crying Anymore", a:"Billy Ray Cyrus"},
+      ],
+      Duet: [
+        {t:"If I Had a Million Dollars", a:"Barenaked Ladies", n:"Shane & Albert"},
+        {t:"I'm Gonna Be (500 Miles)", a:"The Proclaimers", n:"Shane & Albert"},
+        {t:"Love Me Do", a:"The Beatles", n:"Albert & Shane"},
+      ]
+    }
+  },
+  {
+    id: 4, date: "Sep 13, 2025", event: "90's Night", venue: "Bean and Olive",
+    performers: ["Albert", "Shane"],
+    songs: {
+      Albert: [
+        {t:"Running Down a Dream", a:"Tom Petty"}, {t:"Losing My Religion", a:"R.E.M."},
+        {t:"The Way", a:"Fastball"}, {t:"Oh What a Thrill", a:"The Mavericks"},
+        {t:"Wonderwall", a:"Oasis"}, {t:"Kentucky Rain", a:"Elvis Presley"},
+        {t:"You Gave Me a Mountain", a:"Elvis Presley"}, {t:"Jane", a:"Barenaked Ladies"},
+        {t:"Little Less Conversation", a:"Elvis Presley"},
+      ],
+      Shane: [
+        {t:"We Were in Love", a:"Toby Keith"}, {t:"She's Not Cryin' Anymore", a:"Billy Ray Cyrus"},
+        {t:"All You Ever Do Is Bring Me Down", a:"The Mavericks"},
+        {t:"I Would Do Anything for Love", a:"Meat Loaf"},
+        {t:"Walking in Memphis", a:"Marc Cohn"}, {t:"Downtown Train", a:"Rod Stewart"},
+        {t:"Rhythm of My Heart", a:"Rod Stewart"}, {t:"Jump Around", a:"House of Pain"},
+        {t:"I'm Too Sexy", a:"Right Said Fred"}, {t:"Cotton Eye Joe", a:"Rednex"},
+        {t:"Livin' La Vida Loca", a:"Ricky Martin"}, {t:"Sacrifice", a:"Elton John"},
+        {t:"The Way You Look Tonight", a:"Elton John"},
+      ],
+      Duet: [
+        {t:"If I Had a Million Dollars", a:"Barenaked Ladies", n:"Shane & Albert"},
+      ]
+    }
+  },
+  {
+    id: 5, date: "Nov 1, 2025", event: "Alexa's Birthday Bash", venue: "Private event",
+    performers: ["Albert", "Jim", "Shane"],
+    songs: {
+      Albert: [
+        {t:"Tempted", a:"Marty Stuart"}, {t:"Dance the Night Away", a:"The Mavericks"},
+        {t:"I Only Want to Be With You", a:"Hootie & the Blowfish"},
+        {t:"The Breakup Song", a:"The Greg Kihn Band"}, {t:"Rock This Town", a:"Stray Cats"},
+        {t:"Rock Me Gently", a:"Andy Kim"}, {t:"Spinning Wheel", a:"Blood, Sweat & Tears"},
+        {t:"Love Somebody", a:"Morgan Wallen"}, {t:"Bad Bad Leroy Brown", a:"Jim Croce"},
+        {t:"Suspicious Minds", a:"Elvis Presley"}, {t:"Burning Love", a:"Elvis Presley"},
+        {t:"Pocket of a Clown", a:"Dwight Yoakam"}, {t:"Moody Blue", a:"Elvis Presley"},
+        {t:"Don't Pull Your Love", a:"Hamilton, Joe Frank & Reynolds"},
+        {t:"Little Less Conversation", a:"Elvis Presley"},
+        {t:"You Made Me So Very Happy", a:"Blood, Sweat & Tears"},
+      ],
+      Jim: [
+        {t:"Have You Ever Seen the Rain", a:"CCR"}, {t:"Hurt So Good", a:"John Mellencamp"},
+        {t:"Sweet Caroline", a:"Neil Diamond"}, {t:"Friends in Low Places", a:"Garth Brooks"},
+        {t:"Tennessee Whiskey", a:"Chris Stapleton"}, {t:"Take Me Home Country Roads", a:"John Denver"},
+        {t:"I Like It I Love It", a:"Tim McGraw"}, {t:"Bad Moon Rising", a:"CCR"},
+        {t:"Sweet Home Alabama", a:"Lynyrd Skynyrd"}, {t:"Brown Eyed Girl", a:"Van Morrison"},
+        {t:"Take It Easy", a:"Eagles"}, {t:"I Drink Alone", a:"George Thorogood"},
+        {t:"Keep Your Hands to Yourself", a:"Georgia Satellites"}, {t:"Save Me", a:"Jelly Roll"},
+        {t:"Something Like That", a:"Tim McGraw"}, {t:"Forever in Blue Jeans", a:"Neil Diamond"},
+        {t:"Mountain Music", a:"Alabama"},
+      ],
+      Shane: [
+        {t:"How Do You Like Me Now", a:"Toby Keith"}, {t:"We Were in Love", a:"Toby Keith"},
+        {t:"Crocodile Rock", a:"Elton John"}, {t:"Rave On", a:"Buddy Holly"},
+        {t:"Green Green Grass of Home", a:"Tom Jones"}, {t:"You'll Always Be Loved By Me", a:"Brooks & Dunn"},
+        {t:"Pride and Joy", a:"Stevie Ray Vaughan"}, {t:"Pretty Woman", a:"Roy Orbison"},
+        {t:"Hard Luck Woman", a:"KISS"}, {t:"All You Ever Do Is Bring Me Down", a:"The Mavericks"},
+        {t:"Midnight Special", a:"Leadbelly (trad.)"}, {t:"Quando Quando Quando", a:"Engelbert Humperdinck"},
+        {t:"Knock Three Times", a:"Tony Orlando & Dawn"},
+        {t:"Guess That's Why They Call It the Blues", a:"Elton John"},
+        {t:"I'm Still Standing", a:"Elton John"}, {t:"What Are You Doing Sunday", a:"Dawn"},
+      ],
+      Duet: [
+        {t:"If I Had a Million Dollars", a:"Barenaked Ladies", n:"Shane & Albert"},
+      ]
+    }
+  },
+  {
+    id: 6, date: "Mar 17, 2026", event: "Julie's 50th / St. Patrick's Day", venue: "Private event",
+    performers: ["Albert", "Jim", "Shane"],
+    songs: {
+      Albert: [
+        {t:"Tempted", a:"Marty Stuart"}, {t:"Dance the Night Away", a:"The Mavericks"},
+        {t:"I Only Want to Be With You", a:"Hootie & the Blowfish"},
+        {t:"The Breakup Song", a:"The Greg Kihn Band"}, {t:"Rock This Town", a:"Stray Cats"},
+        {t:"Love Somebody", a:"Morgan Wallen"}, {t:"Small Town Saturday Night", a:"Hal Ketchum"},
+        {t:"Chattahoochee", a:"Alan Jackson"}, {t:"She's Got the Rhythm", a:"Alan Jackson"},
+        {t:"Treat Me Nice", a:"Elvis Presley"}, {t:"Wasn't That a Party", a:"The Irish Rovers"},
+        {t:"Suspicious Minds", a:"Elvis Presley"}, {t:"Burning Love", a:"Elvis Presley"},
+        {t:"Pocket of a Clown", a:"Dwight Yoakam"},
+      ],
+      Jim: [
+        {t:"Have You Ever Seen the Rain", a:"CCR"}, {t:"Hurt So Good", a:"John Mellencamp"},
+        {t:"Sweet Caroline", a:"Neil Diamond"}, {t:"Friends in Low Places", a:"Garth Brooks"},
+        {t:"Tennessee Whiskey", a:"Chris Stapleton"}, {t:"I Like It I Love It", a:"Tim McGraw"},
+        {t:"Sweet Home Alabama", a:"Lynyrd Skynyrd"}, {t:"Save Me", a:"Jelly Roll"},
+        {t:"Something Like That", a:"Tim McGraw"}, {t:"Mountain Music", a:"Alabama"},
+        {t:"Mustang Sally", a:"Wilson Pickett"}, {t:"Calling Baton Rouge", a:"Garth Brooks"},
+        {t:"God Bless Texas", a:"Lee Ann Womack"}, {t:"Fast As You", a:"Dwight Yoakam"},
+        {t:"Boot Scootin' Boogie", a:"Brooks & Dunn"},
+      ],
+      Shane: [
+        {t:"How Do You Like Me Now", a:"Toby Keith"}, {t:"Just Help Yourself", a:"Tom Jones"},
+        {t:"Rave On", a:"Buddy Holly"}, {t:"Green Green Grass of Home", a:"Tom Jones"},
+        {t:"You'll Always Be Loved By Me", a:"Brooks & Dunn"}, {t:"Pride and Joy", a:"Stevie Ray Vaughan"},
+        {t:"Pretty Woman", a:"Roy Orbison"}, {t:"Hard Luck Woman", a:"KISS"},
+        {t:"I Love a Rainy Night", a:"Eddie Rabbitt"}, {t:"Knock Three Times", a:"Tony Orlando & Dawn"},
+        {t:"Danny Boy", a:"Traditional"}, {t:"On the Dark Side", a:"John Cafferty"},
+        {t:"Summertime Blues", a:"Eddie Cochran"},
+      ],
+      Duet: [
+        {t:"If I Had a Million Dollars", a:"Barenaked Ladies", n:"Shane & Albert"},
+        {t:"Handle with Care", a:"Traveling Wilburys", n:"All Three"},
+        {t:"I'm Gonna Be (500 Miles)", a:"The Proclaimers", n:"Shane & Albert"},
+        {t:"Love Me Do", a:"The Beatles", n:"Albert & Shane"},
+        {t:"End of the Line", a:"Traveling Wilburys", n:"All Three"},
+      ]
+    }
+  },
+  {
+    id: 7, date: "Apr 18, 2026", event: "Bean and Olive", venue: "Bean and Olive",
+    performers: ["Albert", "Jim", "Shane"],
+    songs: {
+      Albert: [
+        {t:"Tempted", a:"Marty Stuart"}, {t:"Dance the Night Away", a:"The Mavericks"},
+        {t:"I Only Want to Be With You", a:"Hootie & the Blowfish"},
+        {t:"Bad Bad Leroy Brown", a:"Jim Croce"}, {t:"The Breakup Song", a:"The Greg Kihn Band"},
+        {t:"Rock This Town", a:"Stray Cats"}, {t:"Rock Me Gently", a:"Andy Kim"},
+        {t:"Spinning Wheel", a:"Blood, Sweat & Tears"}, {t:"Love Somebody", a:"Morgan Wallen"},
+        {t:"We Just Disagree", a:"Dave Mason"}, {t:"The Love Boat Theme", a:"Jack Jones"},
+        {t:"Way Down", a:"Elvis Presley"}, {t:"867-5309/Jenny", a:"Tommy Tutone"},
+        {t:"You'll Never Find Another Love Like Mine", a:"Lou Rawls"},
+      ],
+      Jim: [
+        {t:"Have You Ever Seen the Rain", a:"CCR"}, {t:"Hurt So Good", a:"John Mellencamp"},
+        {t:"Sweet Caroline", a:"Neil Diamond"}, {t:"Friends in Low Places", a:"Garth Brooks"},
+        {t:"Tennessee Whiskey", a:"Chris Stapleton"}, {t:"Take Me Home Country Roads", a:"John Denver"},
+        {t:"I Like It I Love It", a:"Tim McGraw"}, {t:"Against the Wind", a:"Bob Seger"},
+        {t:"Paper in Fire", a:"John Mellencamp"},
+        {t:"Good Ol' Boys (Dukes of Hazzard Theme)", a:"Waylon Jennings"},
+        {t:"Bad Moon Rising", a:"CCR"}, {t:"Sweet Home Alabama", a:"Lynyrd Skynyrd"},
+        {t:"White Wedding", a:"Billy Idol"}, {t:"Twist and Shout", a:"The Beatles"},
+        {t:"Mony Mony", a:"Billy Idol"}, {t:"Mountain Music", a:"Alabama"},
+      ],
+      Shane: [
+        {t:"How Do You Like Me Now", a:"Toby Keith"}, {t:"We Were in Love", a:"Toby Keith"},
+        {t:"Crocodile Rock", a:"Elton John"}, {t:"She's Not Cryin' Anymore", a:"Billy Ray Cyrus"},
+        {t:"I Love a Rainy Night", a:"Eddie Rabbitt"}, {t:"If You Could Read My Mind", a:"Gordon Lightfoot"},
+        {t:"Les Bicyclettes de Belsize", a:"Engelbert Humperdinck"},
+        {t:"WKRP in Cincinnati Theme", a:"Steve Carlisle"}, {t:"Folsom Prison Blues", a:"Johnny Cash"},
+        {t:"Another Somebody Done Somebody Wrong Song", a:"B.J. Thomas"},
+        {t:"Stuck on You", a:"Elvis Presley"}, {t:"Ring of Fire", a:"Johnny Cash"},
+        {t:"El Paso", a:"Marty Robbins"},
+      ],
+      Duet: [
+        {t:"If I Had a Million Dollars", a:"Barenaked Ladies", n:"Shane & Albert"},
+        {t:"Handle with Care", a:"Traveling Wilburys", n:"All Three"},
+        {t:"I Am a Man of Constant Sorrow", a:"Soggy Bottom Boys", n:"All Three (Jim lead)"},
+      ]
+    }
+  }
+];
+
+let selectedShow = null;
+
+function renderShowSelector() {
+  if (selectedShow === null) selectedShow = showsData.length - 1; // default to most recent
+  const container = document.getElementById('show-selector');
+  container.innerHTML = showsData.map((show, i) =>
+    `<button class="show-btn ${i === selectedShow ? 'active' : ''}" onclick="selectShow(${i})">
+      <span class="show-num">Show ${show.id}</span>
+      <span class="show-date">${show.date}</span>
+    </button>`
+  ).join('');
+  renderShowDetail(selectedShow);
+}
+
+function selectShow(idx) {
+  selectedShow = idx;
+  document.querySelectorAll('.show-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+  renderShowDetail(idx);
+}
+
+function renderShowDetail(idx) {
+  const show = showsData[idx];
+  const performerColors = { Albert: 'var(--albert)', Jim: 'var(--jim)', Shane: 'var(--shane)', Duet: 'var(--duet)' };
+  const songCount = Object.values(show.songs).reduce((acc, arr) => acc + arr.length, 0);
+  const performerPills = show.performers.map(p =>
+    `<span class="meta-pill" style="color:${performerColors[p]}">${p}</span>`
+  ).join('');
+
+  let html = `<div class="show-info-header">
+    <div class="show-info-title">Show ${show.id} — ${show.event}</div>
+    <div class="show-info-meta">
+      <span>📅 ${show.date}</span>
+      <span>📍 ${show.venue}</span>
+      <span>🎵 ${songCount} songs</span>
+      ${performerPills}
+    </div>
+  </div>
+  <div class="show-songs-grid">`;
+
+  const order = ['Albert', 'Jim', 'Shane', 'Duet'];
+  order.forEach(performer => {
+    const list = show.songs[performer];
+    if (!list || list.length === 0) return;
+    const label = performer === 'Duet' ? 'Duets & Group' : performer;
+    html += `<div class="show-performer-section">
+      <div class="show-perf-header ${performer}">
+        <span>${label}</span>
+        <span>${list.length} songs</span>
+      </div>`;
+    list.forEach(s => {
+      html += `<div class="show-song-item">
+        <div class="s-title">${s.t}</div>
+        <div class="s-artist">${s.a}</div>
+        ${s.n ? `<div class="s-note">${s.n}</div>` : ''}
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  html += `</div>`;
+  document.getElementById('show-detail').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════
+// LIBRARY
+// ═══════════════════════════════════════════
+function getFiltered() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const pf = document.getElementById('filter-performer').value;
+  const gf = document.getElementById('filter-genre').value;
+  const df = document.getElementById('filter-decade').value;
+  return uniqueSongs.filter(s => {
+    if (q && !s.title.toLowerCase().includes(q) && !s.artist.toLowerCase().includes(q)) return false;
+    if (pf && s.performer !== pf) return false;
+    if (gf && s.genre !== gf) return false;
+    if (df && s.decade !== df) return false;
+    return true;
+  });
+}
+
+function sortBy(key) {
+  if (sortKey === key) sortDir *= -1;
+  else { sortKey = key; sortDir = key === 'timesPerformed' ? -1 : 1; }
+  renderLibrary();
+}
+
+function fmtDuration(secs) {
+  if (!secs) return '<span class="tbd">—</span>';
+  const m = Math.floor(secs / 60), s = secs % 60;
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
+
+function renderLibrary() {
+  const data = getFiltered().sort((a, b) => {
+    let av = a[sortKey] ?? '', bv = b[sortKey] ?? '';
+    if (typeof av === 'string') av = av.toLowerCase();
+    if (typeof bv === 'string') bv = bv.toLowerCase();
+    return av < bv ? -sortDir : av > bv ? sortDir : 0;
+  });
+
+  // Stats
+  const albert = data.filter(s => s.performer === 'Albert').length;
+  const jim = data.filter(s => s.performer === 'Jim').length;
+  const shane = data.filter(s => s.performer === 'Shane').length;
+  const duet = data.filter(s => s.performer === 'Duet').length;
+  document.getElementById('stats-bar').innerHTML = `
+    <div class="stat">Total: <strong>${data.length}</strong></div>
+    <div class="stat" style="color:var(--albert)">Albert: <strong>${albert}</strong></div>
+    <div class="stat" style="color:var(--jim)">Jim: <strong>${jim}</strong></div>
+    <div class="stat" style="color:var(--shane)">Shane: <strong>${shane}</strong></div>
+    <div class="stat" style="color:var(--duet)">Duets: <strong>${duet}</strong></div>
+  `;
+
+  // Table
+  document.getElementById('library-body').innerHTML = data.map(s => `
+    <tr>
+      <td>
+        <div class="song-title">${s.title}${s.note ? ' <span title="'+s.note+'" style="color:var(--muted);font-size:11px">⚠️</span>' : ''}</div>
+        <div class="song-artist">${s.artist}</div>
+      </td>
+      <td><span class="song-artist">${s.artist}</span></td>
+      <td><span class="performer-tag ${s.performer}">${s.performerDetail || s.performer}</span></td>
+      <td class="col-genre"><span class="song-artist">${s.genre}</span></td>
+      <td><span class="decade-tag">${s.decade}</span></td>
+      <td><span class="times-badge">${s.timesPerformed}×</span></td>
+      <td>${fmtDuration(s.duration)}</td>
+      <td class="col-bpm">${s.bpm ? s.bpm : '<span class="tbd">—</span>'}</td>
+    </tr>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════
+// SETLIST GENERATOR
+// ═══════════════════════════════════════════
+function generateSetlist() {
+  const showMin = parseInt(document.getElementById('show-duration').value) || 180;
+  const breaks = parseInt(document.getElementById('break-count').value) || 0;
+  const breakMin = parseInt(document.getElementById('break-duration').value) || 10;
+  const avgSecs = Math.round((parseFloat(document.getElementById('avg-duration').value) || 3.5) * 60);
+  const useAlbert = document.getElementById('p-albert').checked;
+  const useJim = document.getElementById('p-jim').checked;
+  const useShane = document.getElementById('p-shane').checked;
+
+  const totalBreakMin = breaks * breakMin;
+  const musicMin = showMin - totalBreakMin;
+  const musicSecs = musicMin * 60;
+  const sets = breaks + 1;
+  const secsPerSet = Math.floor(musicSecs / sets);
+  const songsPerSet = Math.floor(secsPerSet / avgSecs);
+  const totalSongs = songsPerSet * sets;
+
+  // Timing summary
+  document.getElementById('timing-card').style.display = '';
+  document.getElementById('timing-summary').innerHTML = `
+    <div class="timing-card"><div class="num">${showMin}</div><div class="lbl">Show Minutes</div></div>
+    <div class="timing-card"><div class="num">${musicMin}</div><div class="lbl">Music Minutes</div></div>
+    <div class="timing-card"><div class="num">${sets}</div><div class="lbl">Sets</div></div>
+    <div class="timing-card"><div class="num">~${totalSongs}</div><div class="lbl">Songs Total</div></div>
+  `;
+
+  // Build pool
+  const performers = [];
+  if (useAlbert) performers.push('Albert');
+  if (useJim) performers.push('Jim');
+  if (useShane) performers.push('Shane');
+  if (!performers.length) {
+    document.getElementById('setlist-output').innerHTML = '<div class="empty-state">Please select at least one performer.</div>';
+    return;
+  }
+
+  // Pool per performer — shuffle
+  const pool = {};
+  performers.forEach(p => {
+    pool[p] = shuffle([...uniqueSongs.filter(s => s.performer === p)]);
+  });
+  const duetPool = shuffle([...uniqueSongs.filter(s => s.performer === 'Duet')]);
+
+  // Generate sets
+  let html = '';
+  let runningTotal = 0;
+  const usedTitles = new Set();
+
+  for (let setIdx = 0; setIdx < sets; setIdx++) {
+    let setSongs = [];
+    let setPerformerIdx = setIdx % performers.length; // rotate starting performer
+
+    for (let i = 0; i < songsPerSet; i++) {
+      // Every ~5 songs, try to insert a duet
+      const tryDuet = (i > 0 && i % 5 === 0 && duetPool.length > 0);
+      if (tryDuet) {
+        const duet = duetPool.find(s => !usedTitles.has(s.title));
+        if (duet) {
+          setSongs.push(duet);
+          usedTitles.add(duet.title);
+          continue;
+        }
+      }
+      // Pick from current performer's pool
+      const p = performers[(setPerformerIdx + i) % performers.length];
+      const song = pool[p].find(s => !usedTitles.has(s.title));
+      if (song) {
+        setSongs.push(song);
+        usedTitles.add(song.title);
+      }
+    }
+
+    const setDurSecs = setSongs.reduce((acc, s) => acc + (s.duration || avgSecs), 0);
+    const setDurMin = Math.floor(setDurSecs / 60);
+    runningTotal += setDurSecs;
+
+    html += `<div class="set-block">
+      <div class="set-header">
+        <span>Set ${setIdx + 1}</span>
+        <span class="set-time">~${setDurMin} min · ${setSongs.length} songs</span>
+      </div>`;
+
+    setSongs.forEach((s, i) => {
+      const dur = s.duration ? fmtDuration(s.duration) : `<span class="tbd">~${fmtDuration(avgSecs)}</span>`;
+      html += `<div class="set-song">
+        <span class="set-num">${i + 1}</span>
+        <span class="performer-tag ${s.performer}" style="min-width:56px;text-align:center">${s.performerDetail || s.performer}</span>
+        <div class="set-song-info">
+          <div class="set-song-title">${s.title}</div>
+          <div class="set-song-artist">${s.artist}</div>
+        </div>
+        <span class="set-song-dur">${dur}</span>
+      </div>`;
+    });
+
+    html += '</div>';
+
+    if (setIdx < sets - 1) {
+      html += `<div class="break-block"><span>⏸</span><span>Break ${setIdx + 1} — ${breakMin} minutes</span></div>`;
+    }
+  }
+
+  document.getElementById('setlist-output').innerHTML = html;
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// ═══════════════════════════════════════════
+// DURATION DATA (seconds — studio recordings)
+// ═══════════════════════════════════════════
+const durationData = {
+  // Albert
+  "Tempted": 230, "Dance the Night Away": 220, "I Only Want to Be With You": 230,
+  "Bad Bad Leroy Brown": 186, "The Breakup Song": 198, "Rock This Town": 202,
+  "Suspicious Minds": 262, "Burning Love": 179, "Pocket of a Clown": 210,
+  "Rock Me Gently": 213, "Spinning Wheel": 240, "Love Somebody": 160,
+  "Small Town Saturday Night": 196, "Chattahoochee": 217, "She's Got the Rhythm": 164,
+  "Treat Me Nice": 118, "Wasn't That a Party": 163, "We Just Disagree": 179,
+  "The Love Boat Theme": 193, "Way Down": 230, "Moody Blue": 215,
+  "Don't Pull Your Love": 164, "867-5309/Jenny": 183, "Running Down a Dream": 264,
+  "Little Less Conversation": 142, "Devil Went Down to Georgia": 214,
+  "You'll Never Find Another Love Like Mine": 211, "You Made Me So Very Happy": 232,
+  "Tainted Love": 156, "Don't You Forget About Me": 263, "Should I Stay or Should I Go": 189,
+  "Abracadabra": 220, "You Spin Me Round": 202, "Centerfold": 233,
+  "Hungry Like the Wolf": 204, "I Have to Say I Love You in a Song": 153,
+  "I Just Can't Help Believing": 216, "Sundown": 240, "In the Summertime": 206,
+  "Losing My Religion": 267, "The Way": 208, "Oh What a Thrill": 200,
+  "Wonderwall": 259, "Kentucky Rain": 201, "You Gave Me a Mountain": 195,
+  "Jane": 231, "What a Crying Shame": 209, "Sweet Caroline (cover)": 202,
+  // Jim
+  "Have You Ever Seen the Rain": 161, "Hurt So Good": 232, "Sweet Caroline": 202,
+  "Friends in Low Places": 258, "Tennessee Whiskey": 294, "Take Me Home Country Roads": 193,
+  "I Like It I Love It": 211, "Against the Wind": 332, "Paper in Fire": 201,
+  "Good Ol' Boys (Dukes of Hazzard Theme)": 139, "Bad Moon Rising": 141,
+  "Sweet Home Alabama": 285, "Brown Eyed Girl": 184, "Take It Easy": 211,
+  "I Drink Alone": 249, "Keep Your Hands to Yourself": 213, "Save Me": 225,
+  "Something Like That": 220, "Mountain Music": 220, "White Wedding": 257,
+  "Twist and Shout": 153, "Mony Mony": 222, "Forever in Blue Jeans": 202,
+  "Cuts Like a Knife": 221, "Cherry Bomb": 218, "Power of Love": 231,
+  "You Give Love a Bad Name": 224, "Fire Lake": 214, "Bad to the Bone": 358,
+  "Mandy": 191, "Desiree": 245, "Brother Love's Travelling Salvation Show": 309,
+  "Looking Out My Back Door": 152, "Hotel California": 390, "Cherry Cherry": 171,
+  "Thank God I'm a Country Boy": 172, "Simple Man": 355, "Mustang Sally": 237,
+  "Calling Baton Rouge": 171, "God Bless Texas": 226, "Fast As You": 150,
+  "Boot Scootin' Boogie": 213,
+  // Shane
+  "How Do You Like Me Now": 200, "Just Help Yourself": 178, "We Were in Love": 188,
+  "Crocodile Rock": 236, "Rave On": 109, "Green Green Grass of Home": 150,
+  "You'll Always Be Loved By Me": 206, "Pride and Joy": 222, "Pretty Woman": 176,
+  "Hard Luck Woman": 187, "She's Not Cryin' Anymore": 215, "I Love a Rainy Night": 194,
+  "If You Could Read My Mind": 273, "Les Bicyclettes de Belsize": 200,
+  "WKRP in Cincinnati Theme": 180, "Folsom Prison Blues": 165,
+  "Another Somebody Done Somebody Wrong Song": 215, "Midnight Special": 195,
+  "All You Ever Do Is Bring Me Down": 188, "Guess That's Why They Call It the Blues": 309,
+  "Quando Quando Quando": 176, "Knock Three Times": 169, "I'm Still Standing": 181,
+  "Danny Boy": 210, "Stuck on You": 114, "Ring of Fire": 156, "El Paso": 299,
+  "What Are You Doing Sunday": 180, "Walk of Life": 251,
+  "The Boys in the Bright White Sports Car": 196, "You Might Think": 194,
+  "Dancing in the Dark": 242, "Red Red Wine": 187, "Footloose": 229,
+  "The Longest Time": 222, "Here for a Good Time": 211, "Authority Song": 194,
+  "Babe": 219, "You Got It": 178, "Words": 230, "How Deep Is Your Love": 224,
+  "Before the Next Teardrop Falls": 148, "Stuck in the Middle With You": 204,
+  "Hooked on a Feeling": 170, "Saturday Night": 201, "Maggie May": 314,
+  "Philadelphia Freedom": 338, "She Ain't Crying Anymore": 192,
+  "Summertime Blues": 132, "I Would Do Anything for Love": 478,
+  "Walking in Memphis": 244, "Downtown Train": 256, "Rhythm of My Heart": 267,
+  "Jump Around": 213, "I'm Too Sexy": 213, "Cotton Eye Joe": 206,
+  "Livin' La Vida Loca": 234, "Sacrifice": 298, "The Way You Look Tonight": 263,
+  // Duets
+  "If I Had a Million Dollars": 269, "Handle with Care": 197,
+  "I'm Gonna Be (500 Miles)": 210, "Love Me Do": 142, "To All the Girls": 219,
+  "You Don't Bring Me Flowers": 217, "I Am a Man of Constant Sorrow": 160,
+  "End of the Line": 214,
+};
+uniqueSongs.forEach(s => {
+  if (durationData[s.title]) s.duration = durationData[s.title];
+});
+
+// ═══════════════════════════════════════════
+// BPM DATA (from training knowledge)
+// ═══════════════════════════════════════════
+const bpmData = {
+  // Albert
+  "Tempted": 116, "Dance the Night Away": 140, "I Only Want to Be With You": 111,
+  "Bad Bad Leroy Brown": 160, "The Breakup Song": 138, "Rock This Town": 180,
+  "Suspicious Minds": 96, "Burning Love": 154, "Pocket of a Clown": 95,
+  "Rock Me Gently": 73, "Spinning Wheel": 118, "Love Somebody": 100,
+  "Small Town Saturday Night": 176, "Chattahoochee": 182, "She's Got the Rhythm": 186,
+  "Treat Me Nice": 154, "Wasn't That a Party": 148, "We Just Disagree": 72,
+  "The Love Boat Theme": 84, "Way Down": 140, "Moody Blue": 108,
+  "Don't Pull Your Love": 112, "867-5309/Jenny": 148, "Running Down a Dream": 168,
+  "Little Less Conversation": 145, "Devil Went Down to Georgia": 130,
+  "You'll Never Find Another Love Like Mine": 108, "You Made Me So Very Happy": 128,
+  "Tainted Love": 131, "Don't You Forget About Me": 122, "Should I Stay or Should I Go": 113,
+  "Abracadabra": 130, "You Spin Me Round": 133, "Centerfold": 130,
+  "Hungry Like the Wolf": 142, "I Have to Say I Love You in a Song": 144,
+  "I Just Can't Help Believing": 92, "Sundown": 122, "In the Summertime": 148,
+  "Losing My Religion": 133, "The Way": 136, "Oh What a Thrill": 130,
+  "Wonderwall": 87, "Kentucky Rain": 86, "You Gave Me a Mountain": 88,
+  "Jane": 103, "What a Crying Shame": 134, "Sweet Caroline (cover)": 148,
+  // Jim
+  "Have You Ever Seen the Rain": 112, "Hurt So Good": 126, "Sweet Caroline": 148,
+  "Friends in Low Places": 100, "Tennessee Whiskey": 90, "Take Me Home Country Roads": 120,
+  "I Like It I Love It": 106, "Against the Wind": 72, "Paper in Fire": 138,
+  "Good Ol' Boys (Dukes of Hazzard Theme)": 138, "Bad Moon Rising": 178,
+  "Sweet Home Alabama": 100, "Brown Eyed Girl": 150, "Take It Easy": 136,
+  "I Drink Alone": 136, "Keep Your Hands to Yourself": 148, "Save Me": 80,
+  "Something Like That": 116, "Mountain Music": 156, "White Wedding": 147,
+  "Twist and Shout": 156, "Mony Mony": 137, "Forever in Blue Jeans": 96,
+  "Cuts Like a Knife": 140, "Cherry Bomb": 162, "Power of Love": 120,
+  "You Give Love a Bad Name": 122, "Fire Lake": 116, "Bad to the Bone": 92,
+  "Mandy": 72, "Desiree": 116, "Brother Love's Travelling Salvation Show": 138,
+  "Looking Out My Back Door": 192, "Hotel California": 75, "Cherry Cherry": 138,
+  "Thank God I'm a Country Boy": 160, "Simple Man": 56, "Mustang Sally": 100,
+  "Calling Baton Rouge": 148, "God Bless Texas": 130, "Fast As You": 162,
+  "Boot Scootin' Boogie": 186,
+  // Shane
+  "How Do You Like Me Now": 134, "Just Help Yourself": 148, "We Were in Love": 108,
+  "Crocodile Rock": 150, "Rave On": 182, "Green Green Grass of Home": 74,
+  "You'll Always Be Loved By Me": 128, "Pride and Joy": 120, "Pretty Woman": 127,
+  "Hard Luck Woman": 116, "She's Not Cryin' Anymore": 88, "I Love a Rainy Night": 148,
+  "If You Could Read My Mind": 100, "Les Bicyclettes de Belsize": 68,
+  "WKRP in Cincinnati Theme": 120, "Folsom Prison Blues": 152,
+  "Another Somebody Done Somebody Wrong Song": 112, "Midnight Special": 130,
+  "All You Ever Do Is Bring Me Down": 138, "Guess That's Why They Call It the Blues": 76,
+  "Quando Quando Quando": 130, "Knock Three Times": 152, "I'm Still Standing": 124,
+  "Danny Boy": 60, "Stuck on You": 170, "Ring of Fire": 148, "El Paso": 138,
+  "What Are You Doing Sunday": 110, "Walk of Life": 168,
+  "The Boys in the Bright White Sports Car": 136, "You Might Think": 122,
+  "Dancing in the Dark": 120, "Red Red Wine": 74, "Footloose": 174,
+  "The Longest Time": 176, "Here for a Good Time": 150, "Authority Song": 162,
+  "Babe": 73, "You Got It": 120, "Words": 72, "How Deep Is Your Love": 82,
+  "Before the Next Teardrop Falls": 88, "Stuck in the Middle With You": 118,
+  "Hooked on a Feeling": 132, "Saturday Night": 130, "Maggie May": 130,
+  "Philadelphia Freedom": 128, "She Ain't Crying Anymore": 88,
+  "On the Dark Side": 138, "Summertime Blues": 158, "I Would Do Anything for Love": 76,
+  "Walking in Memphis": 108, "Downtown Train": 104, "Rhythm of My Heart": 142,
+  "Jump Around": 99, "I'm Too Sexy": 134, "Cotton Eye Joe": 132,
+  "Livin' La Vida Loca": 178, "Sacrifice": 84, "The Way You Look Tonight": 80,
+  // Duets
+  "If I Had a Million Dollars": 168, "Handle with Care": 120,
+  "I'm Gonna Be (500 Miles)": 136, "Love Me Do": 140, "To All the Girls": 84,
+  "You Don't Bring Me Flowers": 72, "I Am a Man of Constant Sorrow": 138,
+  "End of the Line": 138,
+};
+uniqueSongs.forEach(s => {
+  if (bpmData[s.title]) s.bpm = bpmData[s.title];
+});
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+renderLibrary();
+</script>
+</body>
+</html>
