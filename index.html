@@ -181,6 +181,18 @@
     .show-info-meta { gap: 10px; }
   }
 
+  /* Roadmap Tab */
+  .roadmap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .roadmap-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+  .roadmap-card .feature-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .roadmap-card .feature-desc { color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .status-badge { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; border-radius: 20px; padding: 3px 10px; margin-bottom: 10px; }
+  .status-next { background: rgba(74,158,255,0.15); color: var(--albert); border: 1px solid rgba(74,158,255,0.4); }
+  .status-planned { background: rgba(78,203,113,0.12); color: var(--jim); border: 1px solid rgba(78,203,113,0.3); }
+  .status-idea { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+  .roadmap-header { margin-bottom: 20px; }
+  .roadmap-header p { color: var(--muted); font-size: 14px; line-height: 1.6; margin-top: 6px; }
+
   /* Shows Tab */
   .show-selector { display: flex; gap: 8px; flex-wrap: wrap; }
   .show-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--muted); cursor: pointer; font-size: 12px; font-weight: 600; padding: 8px 14px; transition: all 0.2s; text-align: left; min-width: 130px; }
@@ -211,7 +223,7 @@
 <header>
   <h1>🎤 Three <span>Amigos</span> — Set List Creator</h1>
   <div class="header-right">
-    <div class="version-badge">v<span>0.74</span> &nbsp;·&nbsp; May 17, 2026</div>
+    <div class="version-badge">v<span>0.75</span> &nbsp;·&nbsp; May 19, 2026</div>
     <div class="performer-pills">
       <span class="pill albert">Albert</span>
       <span class="pill jim">Jim</span>
@@ -224,6 +236,7 @@
   <button class="active" onclick="showTab('library')">📚 Song Library</button>
   <button onclick="showTab('shows')">🎭 Show History</button>
   <button onclick="showTab('generator')">🎵 Setlist Generator</button>
+  <button onclick="showTab('roadmap')">🗺️ Planned Features</button>
 </nav>
 
 <main>
@@ -338,6 +351,49 @@
             <div class="empty-state">Configure your show settings and click Generate Setlist to get started.</div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROADMAP TAB -->
+  <div id="tab-roadmap" style="display:none">
+    <div class="card">
+      <div class="roadmap-header">
+        <h2>Planned Features</h2>
+        <p>Ideas and improvements on the radar for the Three Amigos Set List Creator. If you've got a new idea, let the assistant know and it'll get added here.</p>
+      </div>
+      <div class="roadmap-grid">
+
+        <div class="roadmap-card">
+          <div class="status-badge status-next">Next Up</div>
+          <div class="feature-title">🎬 YouTube Karaoke Track Lengths</div>
+          <div class="feature-desc">Pull the exact running time for each karaoke track directly from YouTube. Replaces the studio recording approximations currently used by the Setlist Generator.</div>
+        </div>
+
+        <div class="roadmap-card">
+          <div class="status-badge status-next">Next Up</div>
+          <div class="feature-title">▶️ YouTube Playlist Builder</div>
+          <div class="feature-desc">Once a setlist is generated, automatically build it as a YouTube playlist in Albert's YouTube Premium account — ready to play at the show.</div>
+        </div>
+
+        <div class="roadmap-card">
+          <div class="status-badge status-planned">Planned</div>
+          <div class="feature-title">🔗 YouTube Links Per Song</div>
+          <div class="feature-desc">Two links per song in the library: the correct karaoke track on YouTube, and the official music video. Both visible and clickable in the song table.</div>
+        </div>
+
+        <div class="roadmap-card">
+          <div class="status-badge status-planned">Planned</div>
+          <div class="feature-title">🔄 Configurable Performer Rotation</div>
+          <div class="feature-desc">More control over how performers rotate in the Setlist Generator. Instead of one song at a time, choose how many consecutive songs each performer sings before handing off (e.g. Albert × 2 → Shane × 2 → Jim × 2).</div>
+        </div>
+
+        <div class="roadmap-card">
+          <div class="status-badge status-idea">Idea</div>
+          <div class="feature-title">💬 Group Suggestions Tab</div>
+          <div class="feature-desc">A tab where Jim, Shane, and Alexa can submit song ideas directly on the page. Needs a notification method and a backend form service (e.g. Formspree or Google Form embed) since GitHub Pages is static.</div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -542,13 +598,15 @@ let sortDir = -1;
 // ═══════════════════════════════════════════
 function showTab(tab) {
   document.getElementById('tab-library').style.display = tab === 'library' ? '' : 'none';
-  document.getElementById('tab-generator').style.display = tab === 'generator' ? '' : 'none';
   document.getElementById('tab-shows').style.display = tab === 'shows' ? '' : 'none';
+  document.getElementById('tab-generator').style.display = tab === 'generator' ? '' : 'none';
+  document.getElementById('tab-roadmap').style.display = tab === 'roadmap' ? '' : 'none';
   document.querySelectorAll('nav button').forEach((b, i) => {
     b.classList.toggle('active',
       (tab === 'library' && i === 0) ||
-      (tab === 'generator' && i === 1) ||
-      (tab === 'shows' && i === 2)
+      (tab === 'shows' && i === 1) ||
+      (tab === 'generator' && i === 2) ||
+      (tab === 'roadmap' && i === 3)
     );
   });
   if (tab === 'shows') renderShowSelector();
