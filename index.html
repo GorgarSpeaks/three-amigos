@@ -223,7 +223,7 @@
 <header>
   <h1>🎤 Three <span>Amigos</span> — Set List Creator</h1>
   <div class="header-right">
-    <div class="version-badge">v<span>0.75</span> &nbsp;·&nbsp; May 19, 2026</div>
+    <div class="version-badge">v<span>0.77</span> &nbsp;·&nbsp; May 29, 2026</div>
     <div class="performer-pills">
       <span class="pill albert">Albert</span>
       <span class="pill jim">Jim</span>
@@ -236,6 +236,7 @@
   <button class="active" onclick="showTab('library')">📚 Song Library</button>
   <button onclick="showTab('shows')">🎭 Show History</button>
   <button onclick="showTab('generator')">🎵 Setlist Generator</button>
+  <button onclick="showTab('try')">🎸 Songs to Try</button>
   <button onclick="showTab('roadmap')">🗺️ Planned Features</button>
 </nav>
 
@@ -351,6 +352,72 @@
             <div class="empty-state">Configure your show settings and click Generate Setlist to get started.</div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SONGS TO TRY TAB -->
+  <div id="tab-try" style="display:none">
+    <div class="card">
+      <div class="roadmap-header">
+        <h2>Songs to Try</h2>
+        <p>Songs we want to try at practice — not yet in the regular rotation. Tell the assistant to add a song anytime, via chat or your Drafts inbox. Click "Mark Adopted" once a song makes it into the library.</p>
+      </div>
+      <div class="filters">
+        <input type="text" id="try-search" placeholder="Search songs or artists…" oninput="renderTryList()">
+        <select id="try-filter-suggested" onchange="renderTryList()">
+          <option value="">All Members</option>
+          <option value="Albert">Albert</option>
+          <option value="Jim">Jim</option>
+          <option value="Shane">Shane</option>
+        </select>
+        <select id="try-filter-genre" onchange="renderTryList()">
+          <option value="">All Genres</option>
+          <option value="Country">Country</option>
+          <option value="Classic Rock">Classic Rock</option>
+          <option value="Rock">Rock</option>
+          <option value="80s Pop/Rock">80s Pop/Rock</option>
+          <option value="New Wave">New Wave</option>
+          <option value="R&B / Soul">R&amp;B / Soul</option>
+          <option value="Pop">Pop</option>
+          <option value="Blues Rock">Blues Rock</option>
+          <option value="Folk Rock">Folk Rock</option>
+          <option value="Alternative">Alternative</option>
+          <option value="Irish / Folk">Irish / Folk</option>
+        </select>
+        <select id="try-filter-decade" onchange="renderTryList()">
+          <option value="">All Decades</option>
+          <option value="50s">50s</option>
+          <option value="60s">60s</option>
+          <option value="70s">70s</option>
+          <option value="80s">80s</option>
+          <option value="90s">90s</option>
+          <option value="00s">00s</option>
+          <option value="10s">10s</option>
+          <option value="20s">20s</option>
+        </select>
+        <select id="try-filter-status" onchange="renderTryList()">
+          <option value="">All Statuses</option>
+          <option value="Trying">Trying</option>
+          <option value="Adopted">Adopted ✓</option>
+        </select>
+      </div>
+      <div class="stats-bar" id="try-stats-bar"></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th onclick="trySortBy('title')">Song</th>
+              <th onclick="trySortBy('artist')">Artist</th>
+              <th onclick="trySortBy('suggestedBy')">Suggested By</th>
+              <th onclick="trySortBy('genre')" class="col-genre">Genre</th>
+              <th onclick="trySortBy('decade')">Decade</th>
+              <th onclick="trySortBy('status')">Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="try-body"></tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -514,7 +581,7 @@ const songs = [
   { title: "Just Help Yourself", artist: "Tom Jones", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 4, duration: null, bpm: null },
   { title: "We Were in Love", artist: "Toby Keith", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 3, duration: null, bpm: null },
   { title: "Crocodile Rock", artist: "Elton John", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 3, duration: null, bpm: null },
-  { title: "Rave On", artist: "Buddy Holly", performer: "Shane", genre: "Classic Rock", decade: "50s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "Rave On", artist: "John Cougar Mellencamp", performer: "Shane", genre: "Classic Rock", decade: "50s", timesPerformed: 3, duration: null, bpm: null },
   { title: "Green Green Grass of Home", artist: "Tom Jones", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 3, duration: null, bpm: null },
   { title: "You'll Always Be Loved By Me", artist: "Brooks & Dunn", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 3, duration: null, bpm: null },
   { title: "Pride and Joy", artist: "Stevie Ray Vaughan", performer: "Shane", genre: "Blues Rock", decade: "80s", timesPerformed: 3, duration: null, bpm: null },
@@ -600,16 +667,19 @@ function showTab(tab) {
   document.getElementById('tab-library').style.display = tab === 'library' ? '' : 'none';
   document.getElementById('tab-shows').style.display = tab === 'shows' ? '' : 'none';
   document.getElementById('tab-generator').style.display = tab === 'generator' ? '' : 'none';
+  document.getElementById('tab-try').style.display = tab === 'try' ? '' : 'none';
   document.getElementById('tab-roadmap').style.display = tab === 'roadmap' ? '' : 'none';
   document.querySelectorAll('nav button').forEach((b, i) => {
     b.classList.toggle('active',
       (tab === 'library' && i === 0) ||
       (tab === 'shows' && i === 1) ||
       (tab === 'generator' && i === 2) ||
-      (tab === 'roadmap' && i === 3)
+      (tab === 'try' && i === 3) ||
+      (tab === 'roadmap' && i === 4)
     );
   });
   if (tab === 'shows') renderShowSelector();
+  if (tab === 'try') renderTryList();
 }
 
 // ═══════════════════════════════════════════
@@ -710,7 +780,7 @@ const showsData = [
       ],
       Shane: [
         {t:"How Do You Like Me Now", a:"Toby Keith"}, {t:"Just Help Yourself", a:"Tom Jones"},
-        {t:"Rave On", a:"Buddy Holly"}, {t:"Green Green Grass of Home", a:"Tom Jones"},
+        {t:"Rave On", a:"John Cougar Mellencamp"}, {t:"Green Green Grass of Home", a:"Tom Jones"},
         {t:"You'll Always Be Loved By Me", a:"Brooks & Dunn"}, {t:"Pride and Joy", a:"Stevie Ray Vaughan"},
         {t:"Pretty Woman", a:"Roy Orbison"}, {t:"Folsom Prison Blues", a:"Johnny Cash"},
         {t:"Danny Boy", a:"Traditional"}, {t:"Guess That's Why They Call It the Blues", a:"Elton John"},
@@ -778,7 +848,7 @@ const showsData = [
       ],
       Shane: [
         {t:"How Do You Like Me Now", a:"Toby Keith"}, {t:"We Were in Love", a:"Toby Keith"},
-        {t:"Crocodile Rock", a:"Elton John"}, {t:"Rave On", a:"Buddy Holly"},
+        {t:"Crocodile Rock", a:"Elton John"}, {t:"Rave On", a:"John Cougar Mellencamp"},
         {t:"Green Green Grass of Home", a:"Tom Jones"}, {t:"You'll Always Be Loved By Me", a:"Brooks & Dunn"},
         {t:"Pride and Joy", a:"Stevie Ray Vaughan"}, {t:"Pretty Woman", a:"Roy Orbison"},
         {t:"Hard Luck Woman", a:"KISS"}, {t:"All You Ever Do Is Bring Me Down", a:"The Mavericks"},
@@ -818,7 +888,7 @@ const showsData = [
       ],
       Shane: [
         {t:"How Do You Like Me Now", a:"Toby Keith"}, {t:"Just Help Yourself", a:"Tom Jones"},
-        {t:"Rave On", a:"Buddy Holly"}, {t:"Green Green Grass of Home", a:"Tom Jones"},
+        {t:"Rave On", a:"John Cougar Mellencamp"}, {t:"Green Green Grass of Home", a:"Tom Jones"},
         {t:"You'll Always Be Loved By Me", a:"Brooks & Dunn"}, {t:"Pride and Joy", a:"Stevie Ray Vaughan"},
         {t:"Pretty Woman", a:"Roy Orbison"}, {t:"Hard Luck Woman", a:"KISS"},
         {t:"I Love a Rainy Night", a:"Eddie Rabbitt"}, {t:"Knock Three Times", a:"Tony Orlando & Dawn"},
@@ -1164,7 +1234,7 @@ const durationData = {
   "Boot Scootin' Boogie": 213,
   // Shane
   "How Do You Like Me Now": 200, "Just Help Yourself": 178, "We Were in Love": 188,
-  "Crocodile Rock": 236, "Rave On": 109, "Green Green Grass of Home": 150,
+  "Crocodile Rock": 236, "Rave On": 197, "Green Green Grass of Home": 150,
   "You'll Always Be Loved By Me": 206, "Pride and Joy": 222, "Pretty Woman": 176,
   "Hard Luck Woman": 187, "She's Not Cryin' Anymore": 215, "I Love a Rainy Night": 194,
   "If You Could Read My Mind": 273, "Les Bicyclettes de Belsize": 200,
@@ -1235,7 +1305,7 @@ const bpmData = {
   "Boot Scootin' Boogie": 186,
   // Shane
   "How Do You Like Me Now": 134, "Just Help Yourself": 148, "We Were in Love": 108,
-  "Crocodile Rock": 150, "Rave On": 182, "Green Green Grass of Home": 74,
+  "Crocodile Rock": 150, "Rave On": 143, "Green Green Grass of Home": 74,
   "You'll Always Be Loved By Me": 128, "Pride and Joy": 120, "Pretty Woman": 127,
   "Hard Luck Woman": 116, "She's Not Cryin' Anymore": 88, "I Love a Rainy Night": 148,
   "If You Could Read My Mind": 100, "Les Bicyclettes de Belsize": 68,
@@ -1265,6 +1335,91 @@ const bpmData = {
 uniqueSongs.forEach(s => {
   if (bpmData[s.title]) s.bpm = bpmData[s.title];
 });
+
+// ═══════════════════════════════════════════
+// SONGS TO TRY
+// ═══════════════════════════════════════════
+const songsToTry = [
+  // Songs are added here by the assistant when Albert requests them.
+  // Format: { title, artist, suggestedBy, genre, decade, status }
+  // status: "Trying" | "Adopted"
+  { title: "Jet Airliner", artist: "Steve Miller Band", suggestedBy: "Albert", genre: "Rock", decade: "70s", status: "Trying" },
+  { title: "Cover of the Rolling Stone", artist: "Dr. Hook & the Medicine Show", suggestedBy: "Albert", genre: "Classic Rock", decade: "70s", status: "Trying" },
+];
+
+let trySortKey = 'title';
+let trySortDir = 1;
+
+function getTryFiltered() {
+  const q = (document.getElementById('try-search') || {value:''}).value.toLowerCase();
+  const sf = (document.getElementById('try-filter-suggested') || {value:''}).value;
+  const gf = (document.getElementById('try-filter-genre') || {value:''}).value;
+  const df = (document.getElementById('try-filter-decade') || {value:''}).value;
+  const stf = (document.getElementById('try-filter-status') || {value:''}).value;
+  return songsToTry.filter(s => {
+    if (q && !s.title.toLowerCase().includes(q) && !s.artist.toLowerCase().includes(q)) return false;
+    if (sf && s.suggestedBy !== sf) return false;
+    if (gf && s.genre !== gf) return false;
+    if (df && s.decade !== df) return false;
+    if (stf && s.status !== stf) return false;
+    return true;
+  });
+}
+
+function trySortBy(key) {
+  if (trySortKey === key) trySortDir *= -1;
+  else { trySortKey = key; trySortDir = 1; }
+  renderTryList();
+}
+
+function markAdopted(idx) {
+  songsToTry[idx].status = 'Adopted';
+  renderTryList();
+}
+
+function renderTryList() {
+  const data = getTryFiltered().sort((a, b) => {
+    let av = a[trySortKey] ?? '', bv = b[trySortKey] ?? '';
+    if (typeof av === 'string') av = av.toLowerCase();
+    if (typeof bv === 'string') bv = bv.toLowerCase();
+    return av < bv ? -trySortDir : av > bv ? trySortDir : 0;
+  });
+
+  const trying = songsToTry.filter(s => s.status === 'Trying').length;
+  const adopted = songsToTry.filter(s => s.status === 'Adopted').length;
+  document.getElementById('try-stats-bar').innerHTML = `
+    <div class="stat">Total: <strong>${songsToTry.length}</strong></div>
+    <div class="stat">Trying: <strong>${trying}</strong></div>
+    <div class="stat" style="color:var(--jim)">Adopted: <strong>${adopted}</strong></div>
+  `;
+
+  if (data.length === 0) {
+    document.getElementById('try-body').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">No songs yet — tell the assistant what you'd like to try!</td></tr>`;
+    return;
+  }
+
+  document.getElementById('try-body').innerHTML = data.map(s => {
+    const globalIdx = songsToTry.indexOf(s);
+    const isAdopted = s.status === 'Adopted';
+    const rowStyle = isAdopted ? 'opacity:0.5;' : '';
+    const titleStyle = isAdopted ? 'text-decoration:line-through;' : '';
+    const statusBadge = isAdopted
+      ? `<span style="background:rgba(78,203,113,0.15);color:var(--jim);border:1px solid rgba(78,203,113,0.4);border-radius:20px;font-size:11px;font-weight:700;padding:3px 10px;">Adopted ✓</span>`
+      : `<span style="background:rgba(74,158,255,0.12);color:var(--albert);border:1px solid rgba(74,158,255,0.3);border-radius:20px;font-size:11px;font-weight:700;padding:3px 10px;">Trying</span>`;
+    const adoptBtn = !isAdopted
+      ? `<button onclick="markAdopted(${globalIdx})" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;font-size:11px;padding:4px 10px;white-space:nowrap;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">Mark Adopted</button>`
+      : '';
+    return `<tr style="${rowStyle}">
+      <td><div class="song-title" style="${titleStyle}">${s.title}</div></td>
+      <td><span class="song-artist">${s.artist}</span></td>
+      <td><span class="performer-tag ${s.suggestedBy}">${s.suggestedBy}</span></td>
+      <td class="col-genre"><span class="song-artist">${s.genre || '—'}</span></td>
+      <td><span class="decade-tag">${s.decade || '—'}</span></td>
+      <td>${statusBadge}</td>
+      <td>${adoptBtn}</td>
+    </tr>`;
+  }).join('');
+}
 
 // ═══════════════════════════════════════════
 // INIT
