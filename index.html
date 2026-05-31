@@ -332,9 +332,21 @@
             <div class="note">⏱ Until YouTube track lengths are loaded, the generator uses this estimated average. Update to match your typical song length.</div>
           </div>
           <div class="btn-row" style="margin-top:8px">
-            <button class="btn" onclick="generateSetlist()">Generate Setlist</button>
-            <button class="btn secondary" onclick="generateSetlist()">🔀 Shuffle</button>
+            <button class="btn" onclick="buildShowOutline()">▶ Build Show Outline</button>
           </div>
+        </div>
+
+        <!-- SONG PICKER — shown after outline is built -->
+        <div class="card" id="picker-card" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <h2 style="margin:0">Picking For</h2>
+            <span id="slot-indicator" style="font-size:12px;color:var(--muted)"></span>
+          </div>
+          <div id="picker-btns" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"></div>
+          <input type="text" id="picker-search" placeholder="Search songs…" oninput="renderSongPicker()"
+            style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+                   color:var(--text);font-size:14px;padding:8px 12px;outline:none;margin-bottom:10px">
+          <div id="song-picker-list" style="max-height:400px;overflow-y:auto"></div>
         </div>
       </div>
 
@@ -344,12 +356,16 @@
           <div class="timing-summary" id="timing-summary"></div>
         </div>
         <div class="card" id="output-card">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-            <h2 style="margin:0">Generated Setlist</h2>
-            <button class="print-btn" onclick="window.print()">🖨 Print</button>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+            <h2 style="margin:0">Show Outline</h2>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="print-btn" id="clear-btn" onclick="clearAllSlots()" style="display:none">↺ Reset</button>
+              <button class="print-btn" id="finalize-btn" onclick="finalizeShow()" style="display:none;color:var(--jim);border-color:var(--jim)">✓ Save Setlist</button>
+              <button class="print-btn" onclick="window.print()" id="print-btn" style="display:none">🖨 Print</button>
+            </div>
           </div>
           <div class="setlist-output" id="setlist-output">
-            <div class="empty-state">Configure your show settings and click Generate Setlist to get started.</div>
+            <div class="empty-state">Configure your show settings and click Build Show Outline to get started.</div>
           </div>
         </div>
       </div>
@@ -575,6 +591,7 @@ const songs = [
   { title: "God Bless Texas", artist: "Little Texas", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
   { title: "Fast As You", artist: "Dwight Yoakam", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
   { title: "Boot Scootin' Boogie", artist: "Brooks & Dunn", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Proud Mary", artist: "Creedence Clearwater Revival", performer: "Jim", genre: "Rock", decade: "60s", timesPerformed: 0, duration: 188, bpm: 121 },
 
   // SHANE'S SONGS
   { title: "How Do You Like Me Now", artist: "Toby Keith", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 4, duration: null, bpm: null },
@@ -885,6 +902,7 @@ const showsData = [
         {t:"Mustang Sally", a:"Wilson Pickett"}, {t:"Calling Baton Rouge", a:"Garth Brooks"},
         {t:"God Bless Texas", a:"Little Texas"}, {t:"Fast As You", a:"Dwight Yoakam"},
         {t:"Boot Scootin' Boogie", a:"Brooks & Dunn"},
+        {t:"Proud Mary", a:"Creedence Clearwater Revival"},
       ],
       Shane: [
         {t:"How Do You Like Me Now", a:"Toby Keith"}, {t:"Just Help Yourself", a:"Tom Jones"},
@@ -1081,109 +1099,278 @@ function renderLibrary() {
 // ═══════════════════════════════════════════
 // SETLIST GENERATOR
 // ═══════════════════════════════════════════
-function generateSetlist() {
+// ═══════════════════════════════════════════
+// INTERACTIVE SHOW BUILDER
+// ═══════════════════════════════════════════
+let showSlots = [];
+let selectedSlotId = null;
+let activePicker = 'Albert';
+let showAvgSecs = 210;
+
+function buildShowOutline() {
   const showMin = parseInt(document.getElementById('show-duration').value) || 180;
   const breaks = parseInt(document.getElementById('break-count').value) || 0;
   const breakMin = parseInt(document.getElementById('break-duration').value) || 10;
-  const avgSecs = Math.round((parseFloat(document.getElementById('avg-duration').value) || 3.5) * 60);
-  const useAlbert = document.getElementById('p-albert').checked;
-  const useJim = document.getElementById('p-jim').checked;
-  const useShane = document.getElementById('p-shane').checked;
+  showAvgSecs = Math.round((parseFloat(document.getElementById('avg-duration').value) || 3.5) * 60);
 
-  const totalBreakMin = breaks * breakMin;
-  const musicMin = showMin - totalBreakMin;
-  const musicSecs = musicMin * 60;
+  const musicMin = showMin - (breaks * breakMin);
   const sets = breaks + 1;
-  const secsPerSet = Math.floor(musicSecs / sets);
-  const songsPerSet = Math.floor(secsPerSet / avgSecs);
+  const songsPerSet = Math.floor((musicMin * 60 / sets) / showAvgSecs);
   const totalSongs = songsPerSet * sets;
+
+  // Build empty slots
+  showSlots = [];
+  let slotId = 0;
+  for (let s = 1; s <= sets; s++) {
+    for (let i = 1; i <= songsPerSet; i++) {
+      showSlots.push({ id: slotId++, setNum: s, slotNum: i, song: null });
+    }
+  }
+  selectedSlotId = showSlots[0]?.id ?? null;
 
   // Timing summary
   document.getElementById('timing-card').style.display = '';
   document.getElementById('timing-summary').innerHTML = `
-    <div class="timing-card"><div class="num">${showMin}</div><div class="lbl">Show Minutes</div></div>
-    <div class="timing-card"><div class="num">${musicMin}</div><div class="lbl">Music Minutes</div></div>
+    <div class="timing-card"><div class="num">${showMin}</div><div class="lbl">Show Min</div></div>
+    <div class="timing-card"><div class="num">${musicMin}</div><div class="lbl">Music Min</div></div>
     <div class="timing-card"><div class="num">${sets}</div><div class="lbl">Sets</div></div>
-    <div class="timing-card"><div class="num">~${totalSongs}</div><div class="lbl">Songs Total</div></div>
+    <div class="timing-card"><div class="num">~${totalSongs}</div><div class="lbl">Songs</div></div>
   `;
 
-  // Build pool
+  document.getElementById('picker-card').style.display = '';
+  document.getElementById('clear-btn').style.display = '';
+  document.getElementById('finalize-btn').style.display = '';
+  document.getElementById('print-btn').style.display = '';
+
+  // Default picker to first checked performer
+  if (document.getElementById('p-albert').checked) activePicker = 'Albert';
+  else if (document.getElementById('p-jim').checked) activePicker = 'Jim';
+  else if (document.getElementById('p-shane').checked) activePicker = 'Shane';
+
+  renderPickerBtns();
+  renderSongPicker();
+  renderOutline();
+}
+
+function renderPickerBtns() {
   const performers = [];
-  if (useAlbert) performers.push('Albert');
-  if (useJim) performers.push('Jim');
-  if (useShane) performers.push('Shane');
-  if (!performers.length) {
-    document.getElementById('setlist-output').innerHTML = '<div class="empty-state">Please select at least one performer.</div>';
+  if (document.getElementById('p-albert').checked) performers.push('Albert');
+  if (document.getElementById('p-jim').checked) performers.push('Jim');
+  if (document.getElementById('p-shane').checked) performers.push('Shane');
+  performers.push('Duet');
+
+  document.getElementById('picker-btns').innerHTML = performers.map(p => {
+    const isActive = p === activePicker;
+    const colorVar = p === 'Duet' ? 'var(--duet)' : `var(--${p.toLowerCase()})`;
+    return `<button onclick="setActivePicker('${p}')"
+      style="background:${isActive ? colorVar : 'var(--surface2)'};
+             color:${isActive ? '#fff' : colorVar};
+             border:2px solid ${colorVar};padding:8px 16px;border-radius:8px;
+             cursor:pointer;font-weight:700;font-size:14px;transition:all .15s;min-height:40px">
+      ${p}
+    </button>`;
+  }).join('');
+}
+
+function setActivePicker(p) {
+  activePicker = p;
+  if (document.getElementById('picker-search')) document.getElementById('picker-search').value = '';
+  renderPickerBtns();
+  renderSongPicker();
+}
+
+function renderSongPicker() {
+  const search = (document.getElementById('picker-search')?.value || '').toLowerCase();
+  const usedTitles = new Set(showSlots.filter(s => s.song).map(s => s.song.title));
+
+  let songs;
+  if (activePicker === 'Duet') {
+    songs = uniqueSongs.filter(s => s.performer === 'Duet');
+  } else {
+    songs = uniqueSongs.filter(s => s.performer === activePicker);
+  }
+  songs = songs
+    .filter(s => !search || s.title.toLowerCase().includes(search) || s.artist.toLowerCase().includes(search))
+    .sort((a, b) => b.timesPerformed - a.timesPerformed);
+
+  const list = document.getElementById('song-picker-list');
+  if (!songs.length) {
+    list.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:12px 0;text-align:center">No songs found.</div>';
     return;
   }
 
-  // Pool per performer — shuffle
-  const pool = {};
-  performers.forEach(p => {
-    pool[p] = shuffle([...uniqueSongs.filter(s => s.performer === p)]);
-  });
-  const duetPool = shuffle([...uniqueSongs.filter(s => s.performer === 'Duet')]);
+  list.innerHTML = songs.map(s => {
+    const used = usedTitles.has(s.title);
+    const dur = s.duration ? fmtDuration(s.duration) : `~${fmtDuration(showAvgSecs)}`;
+    const label = s.performer === 'Duet' ? (s.performerDetail || 'Duet') : s.performer;
+    return `<div onclick="${used ? '' : `addSongToSlot('${s.title.replace(/'/g,"\\'")}')` }"
+      style="display:flex;align-items:center;gap:10px;padding:9px 12px;margin-bottom:5px;
+             border-radius:8px;cursor:${used ? 'default' : 'pointer'};
+             background:${used ? 'transparent' : 'var(--surface2)'};
+             opacity:${used ? '0.35' : '1'};
+             border:1px solid ${used ? 'transparent' : 'var(--border)'};
+             transition:background .12s"
+      onmouseenter="if(!${used})this.style.background='var(--surface)'"
+      onmouseleave="if(!${used})this.style.background='var(--surface2)'">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.title}${used ? ' ✓' : ''}</div>
+        <div style="font-size:12px;color:var(--muted)">${s.artist}</div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);white-space:nowrap">${dur}</div>
+    </div>`;
+  }).join('');
+}
 
-  // Generate sets
+function addSongToSlot(title) {
+  const song = uniqueSongs.find(s => s.title === title);
+  if (!song) return;
+
+  // Use selected slot if it's empty, otherwise next empty slot
+  let target = selectedSlotId !== null ? showSlots.find(s => s.id === selectedSlotId && !s.song) : null;
+  if (!target) target = showSlots.find(s => !s.song);
+  if (!target) return;
+
+  target.song = song;
+
+  // Advance to next empty slot
+  const idx = showSlots.indexOf(target);
+  const next = showSlots.slice(idx + 1).find(s => !s.song);
+  selectedSlotId = next ? next.id : null;
+
+  renderSongPicker();
+  renderOutline();
+}
+
+function selectSlot(id) {
+  selectedSlotId = id;
+  renderOutline();
+}
+
+function removeFromSlot(id) {
+  const slot = showSlots.find(s => s.id === id);
+  if (slot) {
+    slot.song = null;
+    if (selectedSlotId === null) selectedSlotId = id;
+  }
+  renderSongPicker();
+  renderOutline();
+}
+
+function clearAllSlots() {
+  if (!confirm('Clear all songs from the setlist?')) return;
+  showSlots.forEach(s => s.song = null);
+  selectedSlotId = showSlots[0]?.id ?? null;
+  renderSongPicker();
+  renderOutline();
+}
+
+function renderOutline() {
+  if (!showSlots.length) return;
+  const breaks = parseInt(document.getElementById('break-count').value) || 0;
+  const breakMin = parseInt(document.getElementById('break-duration').value) || 10;
+  const sets = breaks + 1;
+
+  // Slot indicator
+  const selected = selectedSlotId !== null ? showSlots.find(s => s.id === selectedSlotId) : null;
+  const nextEmpty = showSlots.find(s => !s.song);
+  const indicator = document.getElementById('slot-indicator');
+  if (indicator) {
+    if (selected && !selected.song) indicator.textContent = `Set ${selected.setNum}, Slot ${selected.slotNum} selected`;
+    else if (nextEmpty) indicator.textContent = `Next: Set ${nextEmpty.setNum} · Slot ${nextEmpty.slotNum}`;
+    else indicator.textContent = '✓ All slots filled!';
+  }
+
   let html = '';
-  let runningTotal = 0;
-  const usedTitles = new Set();
-
-  for (let setIdx = 0; setIdx < sets; setIdx++) {
-    let setSongs = [];
-    let setPerformerIdx = setIdx % performers.length; // rotate starting performer
-
-    for (let i = 0; i < songsPerSet; i++) {
-      // Every ~5 songs, try to insert a duet
-      const tryDuet = (i > 0 && i % 5 === 0 && duetPool.length > 0);
-      if (tryDuet) {
-        const duet = duetPool.find(s => !usedTitles.has(s.title));
-        if (duet) {
-          setSongs.push(duet);
-          usedTitles.add(duet.title);
-          continue;
-        }
-      }
-      // Pick from current performer's pool
-      const p = performers[(setPerformerIdx + i) % performers.length];
-      const song = pool[p].find(s => !usedTitles.has(s.title));
-      if (song) {
-        setSongs.push(song);
-        usedTitles.add(song.title);
-      }
-    }
-
-    const setDurSecs = setSongs.reduce((acc, s) => acc + (s.duration || avgSecs), 0);
-    const setDurMin = Math.floor(setDurSecs / 60);
-    runningTotal += setDurSecs;
+  for (let s = 1; s <= sets; s++) {
+    const setSlots = showSlots.filter(sl => sl.setNum === s);
+    const setDurSecs = setSlots.reduce((acc, sl) => acc + (sl.song ? (sl.song.duration || showAvgSecs) : showAvgSecs), 0);
+    const filled = setSlots.filter(sl => sl.song).length;
 
     html += `<div class="set-block">
       <div class="set-header">
-        <span>Set ${setIdx + 1}</span>
-        <span class="set-time">~${setDurMin} min · ${setSongs.length} songs</span>
+        <span>Set ${s}</span>
+        <span class="set-time">~${Math.floor(setDurSecs/60)} min &nbsp;·&nbsp; ${filled}/${setSlots.length} songs</span>
       </div>`;
 
-    setSongs.forEach((s, i) => {
-      const dur = s.duration ? fmtDuration(s.duration) : `<span class="tbd">~${fmtDuration(avgSecs)}</span>`;
-      html += `<div class="set-song">
-        <span class="set-num">${i + 1}</span>
-        <span class="performer-tag ${s.performer}" style="min-width:56px;text-align:center">${s.performerDetail || s.performer}</span>
-        <div class="set-song-info">
-          <div class="set-song-title">${s.title}</div>
-          <div class="set-song-artist">${s.artist}</div>
-        </div>
-        <span class="set-song-dur">${dur}</span>
-      </div>`;
+    setSlots.forEach((slot, i) => {
+      const isSel = slot.id === selectedSlotId;
+      if (slot.song) {
+        const sg = slot.song;
+        const dur = sg.duration ? fmtDuration(sg.duration) : `~${fmtDuration(showAvgSecs)}`;
+        const label = sg.performer === 'Duet' ? (sg.performerDetail || 'Duet') : sg.performer;
+        html += `<div class="set-song" style="cursor:pointer;${isSel ? 'outline:2px solid var(--accent);border-radius:4px;' : ''}"
+                   onclick="selectSlot(${slot.id})">
+          <span class="set-num">${i + 1}</span>
+          <span class="performer-tag ${sg.performer}" style="min-width:58px;text-align:center;font-size:11px">${label}</span>
+          <div class="set-song-info" style="flex:1">
+            <div class="set-song-title">${sg.title}</div>
+            <div class="set-song-artist">${sg.artist}</div>
+          </div>
+          <span class="set-song-dur">${dur}</span>
+          <button onclick="event.stopPropagation();removeFromSlot(${slot.id})"
+            style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:0 4px;line-height:1;margin-left:4px"
+            title="Remove">×</button>
+        </div>`;
+      } else {
+        html += `<div class="set-song" onclick="selectSlot(${slot.id})"
+                   style="cursor:pointer;opacity:${isSel ? '1' : '0.45'};
+                          ${isSel ? 'outline:2px solid var(--accent);border-radius:4px;background:rgba(74,158,255,0.06);' : ''}">
+          <span class="set-num">${i + 1}</span>
+          <span style="min-width:58px;text-align:center;font-size:11px;color:var(--muted)">—</span>
+          <div class="set-song-info" style="flex:1">
+            <div style="font-size:13px;color:${isSel ? 'var(--accent)' : 'var(--muted)'};font-style:italic">
+              ${isSel ? '← pick a song to fill' : 'empty'}
+            </div>
+          </div>
+          <span style="font-size:12px;color:var(--muted)">~${fmtDuration(showAvgSecs)}</span>
+        </div>`;
+      }
     });
-
     html += '</div>';
-
-    if (setIdx < sets - 1) {
-      html += `<div class="break-block"><span>⏸</span><span>Break ${setIdx + 1} — ${breakMin} minutes</span></div>`;
+    if (s < sets) {
+      html += `<div class="break-block"><span>⏸</span><span>Break ${s} — ${breakMin} min</span></div>`;
     }
   }
 
+  const totalFilled = showSlots.filter(s => s.song).length;
+  const totalSecs = showSlots.reduce((acc, s) => acc + (s.song ? (s.song.duration || showAvgSecs) : showAvgSecs), 0);
+  html += `<div style="text-align:right;padding:10px 16px 4px;font-size:12px;color:var(--muted)">
+    ${totalFilled} of ${showSlots.length} songs filled &nbsp;·&nbsp; ~${Math.floor(totalSecs/60)} min music total
+  </div>`;
+
   document.getElementById('setlist-output').innerHTML = html;
+}
+
+function finalizeShow() {
+  const breaks = parseInt(document.getElementById('break-count').value) || 0;
+  const breakMin = parseInt(document.getElementById('break-duration').value) || 10;
+  const sets = breaks + 1;
+  const date = new Date().toLocaleDateString('en-CA', {year:'numeric', month:'long', day:'numeric'});
+
+  let text = `THREE AMIGOS — SHOW SETLIST\n${date}\n${'='.repeat(44)}\n\n`;
+  for (let s = 1; s <= sets; s++) {
+    const setSlots = showSlots.filter(sl => sl.setNum === s);
+    const setDur = Math.floor(setSlots.reduce((a, sl) => a + (sl.song ? (sl.song.duration || showAvgSecs) : showAvgSecs), 0) / 60);
+    text += `SET ${s}  (~${setDur} min)\n${'-'.repeat(30)}\n`;
+    setSlots.forEach((slot, i) => {
+      if (slot.song) {
+        const dur = slot.song.duration ? fmtDuration(slot.song.duration) : `~${fmtDuration(showAvgSecs)}`;
+        const label = slot.song.performer === 'Duet' ? (slot.song.performerDetail || 'Duet') : slot.song.performer;
+        text += `${String(i+1).padStart(2)}. [${label.padEnd(8)}] ${slot.song.title} — ${slot.song.artist}  (${dur})\n`;
+      } else {
+        text += `${String(i+1).padStart(2)}. [        ] TBD\n`;
+      }
+    });
+    if (s < sets) text += `\n--- BREAK ${s}: ${breakMin} min ---\n\n`;
+  }
+
+  const blob = new Blob([text], {type: 'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Three Amigos Setlist — ${date}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function shuffle(arr) {
@@ -1231,7 +1418,7 @@ const durationData = {
   "Looking Out My Back Door": 152, "Hotel California": 390, "Cherry Cherry": 171,
   "Thank God I'm a Country Boy": 172, "Simple Man": 355, "Mustang Sally": 237,
   "Calling Baton Rouge": 171, "God Bless Texas": 226, "Fast As You": 150,
-  "Boot Scootin' Boogie": 213,
+  "Boot Scootin' Boogie": 213, "Proud Mary": 188,
   // Shane
   "How Do You Like Me Now": 200, "Just Help Yourself": 178, "We Were in Love": 188,
   "Crocodile Rock": 236, "Rave On": 197, "Green Green Grass of Home": 150,
@@ -1302,7 +1489,7 @@ const bpmData = {
   "Looking Out My Back Door": 192, "Hotel California": 75, "Cherry Cherry": 138,
   "Thank God I'm a Country Boy": 160, "Simple Man": 56, "Mustang Sally": 100,
   "Calling Baton Rouge": 148, "God Bless Texas": 130, "Fast As You": 162,
-  "Boot Scootin' Boogie": 186,
+  "Boot Scootin' Boogie": 186, "Proud Mary": 121,
   // Shane
   "How Do You Like Me Now": 134, "Just Help Yourself": 148, "We Were in Love": 108,
   "Crocodile Rock": 150, "Rave On": 143, "Green Green Grass of Home": 74,
