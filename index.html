@@ -157,7 +157,7 @@
     /* Table: hide lower-priority columns on small screens */
     table { font-size: 13px; }
     thead th, tbody td { padding: 9px 10px; }
-    .col-genre, .col-bpm { display: none; }
+    .col-genre, .col-bpm, .col-provider { display: none; }
 
     /* Generator form */
     .form-group input, .form-group select { font-size: 16px; min-height: 44px; }
@@ -292,6 +292,7 @@
               <th onclick="sortBy('timesPerformed')" class="sorted">Plays ▾</th>
               <th onclick="sortBy('duration')">Duration</th>
               <th onclick="sortBy('bpm')" class="col-bpm">BPM</th>
+              <th class="col-provider">Provider</th>
             </tr>
           </thead>
           <tbody id="library-body"></tbody>
@@ -497,34 +498,38 @@
 // ═══════════════════════════════════════════
 const songs = [
   // ALBERT'S SONGS
-  { title: "Tempted", artist: "Marty Stuart", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 5, duration: null, bpm: null },
-  { title: "Dance the Night Away", artist: "The Mavericks", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 5, duration: null, bpm: null },
-  { title: "I Only Want to Be With You", artist: "Hootie & the Blowfish", performer: "Albert", genre: "Rock", decade: "90s", timesPerformed: 4, duration: null, bpm: null },
-  { title: "Bad Bad Leroy Brown", artist: "Jim Croce", performer: "Albert", genre: "Folk Rock", decade: "70s", timesPerformed: 4, duration: null, bpm: null },
-  { title: "The Breakup Song", artist: "The Greg Kihn Band", performer: "Albert", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 4, duration: null, bpm: null },
-  { title: "Rock This Town", artist: "Stray Cats", performer: "Albert", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 4, duration: null, bpm: null },
-  { title: "Suspicious Minds", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 4, duration: null, bpm: null },
-  { title: "Burning Love", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "70s", timesPerformed: 4, duration: null, bpm: null },
-  { title: "Pocket of a Clown", artist: "Dwight Yoakam", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 4, duration: null, bpm: null },
-  { title: "Rock Me Gently", artist: "Andy Kim", performer: "Albert", genre: "Pop", decade: "70s", timesPerformed: 3, duration: null, bpm: null },
-  { title: "Spinning Wheel", artist: "Blood, Sweat & Tears", performer: "Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "Tempted", artist: "Marty Stuart", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 5, duration: 201, bpm: null, karaokeProvider: "KaraFun" },
+  { title: "Dance the Night Away", artist: "The Mavericks", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 5, duration: 262, bpm: null, karaokeProvider: "Zoom Karaoke" },
+  { title: "I Only Want to Be With You", artist: "Hootie & the Blowfish", performer: "Albert", genre: "Rock", decade: "90s", timesPerformed: 4, duration: 237, bpm: null, karaokeProvider: "KaraokeOnVEVO" },
+  { title: "Bad Bad Leroy Brown", artist: "Jim Croce", performer: "Albert", genre: "Folk Rock", decade: "70s", timesPerformed: 4, duration: 191, bpm: null, karaokeProvider: "Zoom Karaoke" },
+  { title: "The Breakup Song", artist: "The Greg Kihn Band", performer: "Albert", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 4, duration: 191, bpm: null, karaokeProvider: "KaraFun" },
+  { title: "Rock This Town", artist: "Stray Cats", performer: "Albert", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 4, duration: 216, bpm: null, karaokeProvider: "Zoom Karaoke" },
+  { title: "Suspicious Minds", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 4, duration: 228, bpm: null, karaokeProvider: "Party Tyme Karaoke" },
+  { title: "Burning Love", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "70s", timesPerformed: 4, duration: 182, bpm: null, karaokeProvider: "KaraokeOnVEVO" },
+  { title: "Pocket of a Clown", artist: "Dwight Yoakam", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 4, duration: 187, bpm: null, karaokeProvider: "KaraokeOnVEVO" },
+  { title: "Rock Me Gently", artist: "Andy Kim", performer: "Albert", genre: "Pop", decade: "70s", timesPerformed: 3, duration: 224, bpm: null, karaokeProvider: "Zoom Karaoke" },
+  { title: "Spinning Wheel", artist: "Blood, Sweat & Tears", performer: "Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 3, duration: 229, bpm: null, karaokeProvider: "KaraokeOnVEVO" },
   { title: "Love Somebody", artist: "Morgan Wallen", performer: "Albert", genre: "Country", decade: "20s", timesPerformed: 3, duration: null, bpm: null },
-  { title: "Small Town Saturday Night", artist: "Hal Ketchum", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "Small Town Saturday Night", artist: "Hal Ketchum", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 3, duration: 182, bpm: null, karaokeProvider: "KaraokeOnVEVO" },
   { title: "Chattahoochee", artist: "Alan Jackson", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 2, duration: null, bpm: null },
-  { title: "She's Got the Rhythm", artist: "Alan Jackson", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "She's Got the Rhythm", artist: "Alan Jackson", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 2, duration: 149, bpm: null, karaokeProvider: "Zoom Karaoke" },
   { title: "Treat Me Nice", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "50s", timesPerformed: 2, duration: null, bpm: null },
-  { title: "Wasn't That a Party", artist: "The Irish Rovers", performer: "Albert", genre: "Irish / Folk", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Wasn't That a Party", artist: "The Irish Rovers", performer: "Albert", genre: "Irish / Folk", decade: "80s", timesPerformed: 2, duration: 234, bpm: null, karaokeProvider: "KaraFun" },
   { title: "We Just Disagree", artist: "Dave Mason", performer: "Albert", genre: "Classic Rock", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
   { title: "The Love Boat Theme", artist: "Jack Jones", performer: "Albert", genre: "Pop", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
   { title: "Way Down", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
-  { title: "Moody Blue", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Moody Blue", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "70s", timesPerformed: 2, duration: 191, bpm: null, karaokeProvider: "Zoom Karaoke" },
   { title: "Don't Pull Your Love", artist: "Hamilton, Joe Frank & Reynolds", performer: "Albert", genre: "Pop", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
   { title: "867-5309/Jenny", artist: "Tommy Tutone", performer: "Albert", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
   { title: "Running Down a Dream", artist: "Tom Petty", performer: "Albert", genre: "Rock", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
   { title: "Little Less Conversation", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 2, duration: null, bpm: null },
   { title: "Devil Went Down to Georgia", artist: "Charlie Daniels Band", performer: "Albert", genre: "Country", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
   { title: "You'll Never Find Another Love Like Mine", artist: "Lou Rawls", performer: "Albert", genre: "R&B / Soul", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
-  { title: "You Made Me So Very Happy", artist: "Blood, Sweat & Tears", performer: "Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Angel Eyes", artist: "Jeff Healey Band", performer: "Albert", genre: "Classic Rock", decade: "80s", timesPerformed: 1, duration: 267, bpm: 63 },
+  { title: "It's Now Or Never", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 1, duration: 203, bpm: 126 },
+  { title: "Heartbreak Hotel / Hound Dog / All Shook Up (Medley)", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "50s", timesPerformed: 1, duration: 206, bpm: 92 },
+  { title: "The Most Beautiful Girl", artist: "Charlie Rich", performer: "Albert", genre: "Country", decade: "70s", timesPerformed: 1, duration: 177, bpm: 103 },
+  { title: "You Made Me So Very Happy", artist: "Blood, Sweat & Tears", performer: "Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 1, duration: 256, bpm: null, karaokeProvider: "Party Tyme Karaoke" },
   { title: "Tainted Love", artist: "Soft Cell", performer: "Albert", genre: "New Wave", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
   { title: "Don't You Forget About Me", artist: "Simple Minds", performer: "Albert", genre: "New Wave", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
   { title: "Should I Stay or Should I Go", artist: "The Clash", performer: "Albert", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
@@ -545,33 +550,35 @@ const songs = [
   { title: "Jane", artist: "Barenaked Ladies", performer: "Albert", genre: "Alternative", decade: "00s", timesPerformed: 1, duration: null, bpm: null },
   { title: "What a Crying Shame", artist: "The Mavericks", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
   { title: "Sweet Caroline (cover)", artist: "Neil Diamond", performer: "Albert", genre: "Pop", decade: "60s", timesPerformed: 1, duration: null, bpm: null, note: "Covered when Jim was absent — normally Jim's song" },
+  { title: "The Girl of My Best Friend", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "50s", timesPerformed: 0, duration: 153, bpm: null, karaokeProvider: "Zoom Karaoke" },
+  { title: "I Really Don't Want to Know", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "50s", timesPerformed: 0, duration: 174, bpm: null, karaokeProvider: "KaraokeOnVEVO" },
   // empty placeholder to reach 49
   { title: "In the Summertime", artist: "Mungo Jerry", performer: "Albert", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
 
   // JIM'S SONGS
-  { title: "Have You Ever Seen the Rain", artist: "Creedence Clearwater Revival", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 4, duration: null, bpm: null },
-  { title: "Hurt So Good", artist: "John Mellencamp", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 4, duration: null, bpm: null },
-  { title: "Sweet Caroline", artist: "Neil Diamond", performer: "Jim", genre: "Pop", decade: "60s", timesPerformed: 4, duration: null, bpm: null },
-  { title: "Friends in Low Places", artist: "Garth Brooks", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 3, duration: null, bpm: null },
-  { title: "Tennessee Whiskey", artist: "Chris Stapleton", performer: "Jim", genre: "Country", decade: "10s", timesPerformed: 3, duration: null, bpm: null },
-  { title: "Take Me Home Country Roads", artist: "John Denver", performer: "Jim", genre: "Folk Rock", decade: "70s", timesPerformed: 3, duration: null, bpm: null },
-  { title: "I Like It I Love It", artist: "Tim McGraw", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "Have You Ever Seen the Rain", artist: "Creedence Clearwater Revival", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 4, duration: 173, bpm: null, karaokeProvider: "Sing King" },
+  { title: "Hurt So Good", artist: "John Mellencamp", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 4, duration: 231, bpm: null, karaokeProvider: "KaraFun" },
+  { title: "Sweet Caroline", artist: "Neil Diamond", performer: "Jim", genre: "Pop", decade: "60s", timesPerformed: 4, duration: 234, bpm: null, karaokeProvider: "KaraFun" },
+  { title: "Friends in Low Places", artist: "Garth Brooks", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 3, duration: 254, bpm: null, karaokeProvider: "Zoom Karaoke" },
+  { title: "Tennessee Whiskey", artist: "Chris Stapleton", performer: "Jim", genre: "Country", decade: "10s", timesPerformed: 3, duration: 297, bpm: null, karaokeProvider: "Zoom Karaoke" },
+  { title: "Take Me Home Country Roads", artist: "John Denver", performer: "Jim", genre: "Folk Rock", decade: "70s", timesPerformed: 3, duration: 197, bpm: null, karaokeProvider: "Zoom Karaoke" },
+  { title: "I Like It I Love It", artist: "Tim McGraw", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 3, duration: 206, bpm: null, karaokeProvider: "Zoom Karaoke" },
   { title: "Against the Wind", artist: "Bob Seger", performer: "Jim", genre: "Classic Rock", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
   { title: "Paper in Fire", artist: "John Mellencamp", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
   { title: "Good Ol' Boys (Dukes of Hazzard Theme)", artist: "Waylon Jennings", performer: "Jim", genre: "Country", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
-  { title: "Bad Moon Rising", artist: "Creedence Clearwater Revival", performer: "Jim", genre: "Classic Rock", decade: "60s", timesPerformed: 2, duration: null, bpm: null },
-  { title: "Sweet Home Alabama", artist: "Lynyrd Skynyrd", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
-  { title: "Brown Eyed Girl", artist: "Van Morrison", performer: "Jim", genre: "Classic Rock", decade: "60s", timesPerformed: 2, duration: null, bpm: null },
-  { title: "Take It Easy", artist: "Eagles", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
-  { title: "I Drink Alone", artist: "George Thorogood", performer: "Jim", genre: "Blues Rock", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
-  { title: "Keep Your Hands to Yourself", artist: "Georgia Satellites", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
-  { title: "Save Me", artist: "Jelly Roll", performer: "Jim", genre: "Country", decade: "20s", timesPerformed: 2, duration: null, bpm: null },
-  { title: "Something Like That", artist: "Tim McGraw", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Bad Moon Rising", artist: "Creedence Clearwater Revival", performer: "Jim", genre: "Classic Rock", decade: "60s", timesPerformed: 2, duration: 145, bpm: null, karaokeProvider: "Zoom Karaoke" },
+  { title: "Sweet Home Alabama", artist: "Lynyrd Skynyrd", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 2, duration: 280, bpm: null, karaokeProvider: "Zoom Karaoke" },
+  { title: "Brown Eyed Girl", artist: "Van Morrison", performer: "Jim", genre: "Classic Rock", decade: "60s", timesPerformed: 2, duration: 200, bpm: null, karaokeProvider: "KaraFun" },
+  { title: "Take It Easy", artist: "Eagles", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 2, duration: 221, bpm: null, karaokeProvider: "Vocal Star Karaoke" },
+  { title: "I Drink Alone", artist: "George Thorogood", performer: "Jim", genre: "Blues Rock", decade: "80s", timesPerformed: 2, duration: 273, bpm: null, karaokeProvider: "KaraFun" },
+  { title: "Keep Your Hands to Yourself", artist: "Georgia Satellites", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 2, duration: 213, bpm: null, karaokeProvider: "KaraFun" },
+  { title: "Save Me", artist: "Jelly Roll", performer: "Jim", genre: "Country", decade: "20s", timesPerformed: 2, duration: 237, bpm: null, karaokeProvider: "Sing King" },
+  { title: "Something Like That", artist: "Tim McGraw", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 2, duration: 193, bpm: null, karaokeProvider: "MrEntertainerKaraoke" },
   { title: "Mountain Music", artist: "Alabama", performer: "Jim", genre: "Country", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
   { title: "White Wedding", artist: "Billy Idol", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
   { title: "Twist and Shout", artist: "The Beatles", performer: "Jim", genre: "Classic Rock", decade: "60s", timesPerformed: 1, duration: null, bpm: null },
   { title: "Mony Mony", artist: "Billy Idol", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
-  { title: "Forever in Blue Jeans", artist: "Neil Diamond", performer: "Jim", genre: "Pop", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Forever in Blue Jeans", artist: "Neil Diamond", performer: "Jim", genre: "Pop", decade: "70s", timesPerformed: 1, duration: 234, bpm: null, karaokeProvider: "Zoom Karaoke" },
   { title: "Cuts Like a Knife", artist: "Bryan Adams", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
   { title: "Cherry Bomb", artist: "John Mellencamp", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
   { title: "Power of Love", artist: "Huey Lewis & the News", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
@@ -592,17 +599,23 @@ const songs = [
   { title: "Fast As You", artist: "Dwight Yoakam", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
   { title: "Boot Scootin' Boogie", artist: "Brooks & Dunn", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
   { title: "Proud Mary", artist: "Creedence Clearwater Revival", performer: "Jim", genre: "Rock", decade: "60s", timesPerformed: 0, duration: 188, bpm: 121 },
+  { title: "Two Out of Three Ain't Bad", artist: "Meat Loaf", performer: "Jim", genre: "Rock", decade: "70s", timesPerformed: 0, duration: 327, bpm: null, karaokeProvider: "Zoom Karaoke" },
+  { title: "Leaving on a Jet Plane", artist: "John Denver", performer: "Jim", genre: "Folk Rock", decade: "70s", timesPerformed: 0, duration: 225, bpm: null, karaokeProvider: "Sing King" },
+  { title: "Rebel Yell", artist: "Billy Idol", performer: "Jim", genre: "Rock", decade: "80s", timesPerformed: 1, duration: 293, bpm: 166 },
+  { title: "All Summer Long", artist: "Kid Rock", performer: "Jim", genre: "Rock", decade: "2000s", timesPerformed: 1, duration: 312, bpm: 103 },
+  { title: "Desperado", artist: "Eagles", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: 224, bpm: 60, karaokeProvider: "Atomic Karaoke" },
+  { title: "Cracklin' Rosie", artist: "Neil Diamond", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: 191, bpm: 127 },
 
   // SHANE'S SONGS
-  { title: "How Do You Like Me Now", artist: "Toby Keith", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 4, duration: null, bpm: null },
-  { title: "Just Help Yourself", artist: "Tom Jones", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 4, duration: null, bpm: null },
-  { title: "We Were in Love", artist: "Toby Keith", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 3, duration: null, bpm: null },
-  { title: "Crocodile Rock", artist: "Elton John", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 3, duration: null, bpm: null },
-  { title: "Rave On", artist: "John Cougar Mellencamp", performer: "Shane", genre: "Classic Rock", decade: "50s", timesPerformed: 3, duration: null, bpm: null },
-  { title: "Green Green Grass of Home", artist: "Tom Jones", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 3, duration: null, bpm: null },
-  { title: "You'll Always Be Loved By Me", artist: "Brooks & Dunn", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 3, duration: null, bpm: null },
-  { title: "Pride and Joy", artist: "Stevie Ray Vaughan", performer: "Shane", genre: "Blues Rock", decade: "80s", timesPerformed: 3, duration: null, bpm: null },
-  { title: "Pretty Woman", artist: "Roy Orbison", performer: "Shane", genre: "Classic Rock", decade: "60s", timesPerformed: 3, duration: null, bpm: null },
+  { title: "How Do You Like Me Now", artist: "Toby Keith", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 4, duration: 226, bpm: null, karaokeProvider: "Party Tyme Karaoke" },
+  { title: "Just Help Yourself", artist: "Tom Jones", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 4, duration: 177, bpm: null, karaokeProvider: "Zoom Karaoke" },
+  { title: "We Were in Love", artist: "Toby Keith", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 3, duration: 256, bpm: null, karaokeProvider: "MrEntertainerKaraoke" },
+  { title: "Crocodile Rock", artist: "Elton John", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 3, duration: 226, bpm: null, karaokeProvider: "KaraokeOnVEVO" },
+  { title: "Rave On", artist: "John Cougar Mellencamp", performer: "Shane", genre: "Classic Rock", decade: "50s", timesPerformed: 3, duration: 195, bpm: null, karaokeProvider: "MEE Karaoke" },
+  { title: "Green Green Grass of Home", artist: "Tom Jones", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 3, duration: 195, bpm: null, karaokeProvider: "Zoom Karaoke" },
+  { title: "You'll Always Be Loved By Me", artist: "Brooks & Dunn", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 3, duration: 196, bpm: null, karaokeProvider: "KaraokeOnVEVO" },
+  { title: "Pride and Joy", artist: "Stevie Ray Vaughan", performer: "Shane", genre: "Blues Rock", decade: "80s", timesPerformed: 3, duration: 224, bpm: null, karaokeProvider: "Zoom Karaoke" },
+  { title: "Pretty Woman", artist: "Roy Orbison", performer: "Shane", genre: "Classic Rock", decade: "60s", timesPerformed: 3, duration: 189, bpm: null, karaokeProvider: "Zoom Karaoke" },
   { title: "Hard Luck Woman", artist: "KISS", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 3, duration: null, bpm: null },
   { title: "She's Not Cryin' Anymore", artist: "Billy Ray Cyrus", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 2, duration: null, bpm: null },
   { title: "I Love a Rainy Night", artist: "Eddie Rabbitt", performer: "Shane", genre: "Country", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
@@ -611,17 +624,17 @@ const songs = [
   { title: "WKRP in Cincinnati Theme", artist: "Steve Carlisle", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
   { title: "Folsom Prison Blues", artist: "Johnny Cash", performer: "Shane", genre: "Country", decade: "50s", timesPerformed: 2, duration: null, bpm: null },
   { title: "Another Somebody Done Somebody Wrong Song", artist: "B.J. Thomas", performer: "Shane", genre: "Country", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
-  { title: "Midnight Special", artist: "Leadbelly", performer: "Shane", genre: "Folk Rock", decade: "60s", timesPerformed: 2, duration: null, bpm: null },
-  { title: "All You Ever Do Is Bring Me Down", artist: "The Mavericks", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 2, duration: null, bpm: null },
-  { title: "Guess That's Why They Call It the Blues", artist: "Elton John", performer: "Shane", genre: "Pop", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
-  { title: "Quando Quando Quando", artist: "Engelbert Humperdinck", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 2, duration: null, bpm: null },
-  { title: "Knock Three Times", artist: "Tony Orlando & Dawn", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Midnight Special", artist: "Leadbelly", performer: "Shane", genre: "Folk Rock", decade: "60s", timesPerformed: 2, duration: 259, bpm: null, karaokeProvider: "KaraokeOnVEVO" },
+  { title: "All You Ever Do Is Bring Me Down", artist: "The Mavericks", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 2, duration: 238, bpm: null, karaokeProvider: "EasyKaraoke" },
+  { title: "Guess That's Why They Call It the Blues", artist: "Elton John", performer: "Shane", genre: "Pop", decade: "80s", timesPerformed: 2, duration: 302, bpm: null, karaokeProvider: "KaraokeOnVEVO" },
+  { title: "Quando Quando Quando", artist: "Engelbert Humperdinck", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 2, duration: 217, bpm: null, karaokeProvider: "Vocal Star Karaoke" },
+  { title: "Knock Three Times", artist: "Tony Orlando & Dawn", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 2, duration: 188, bpm: null, karaokeProvider: "Zoom Karaoke" },
   { title: "I'm Still Standing", artist: "Elton John", performer: "Shane", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
   { title: "Danny Boy", artist: "Traditional", performer: "Shane", genre: "Irish / Folk", decade: "60s", timesPerformed: 2, duration: null, bpm: null },
-  { title: "Stuck on You", artist: "Elvis Presley", performer: "Shane", genre: "Classic Rock", decade: "60s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "Stuck on You", artist: "Lionel Richie", performer: "Shane", genre: "Pop", decade: "80s", timesPerformed: 1, duration: 207, bpm: null },
   { title: "Ring of Fire", artist: "Johnny Cash", performer: "Shane", genre: "Country", decade: "60s", timesPerformed: 1, duration: null, bpm: null },
   { title: "El Paso", artist: "Marty Robbins", performer: "Shane", genre: "Country", decade: "60s", timesPerformed: 1, duration: null, bpm: null },
-  { title: "What Are You Doing Sunday", artist: "Dawn", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "What Are You Doing Sunday", artist: "Dawn", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 1, duration: 167, bpm: null, karaokeProvider: "Zoom Karaoke" },
   { title: "Walk of Life", artist: "Dire Straits", performer: "Shane", genre: "Classic Rock", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
   { title: "The Boys in the Bright White Sports Car", artist: "Trooper", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
   { title: "You Might Think", artist: "The Cars", performer: "Shane", genre: "New Wave", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
@@ -654,12 +667,13 @@ const songs = [
   { title: "Livin' La Vida Loca", artist: "Ricky Martin", performer: "Shane", genre: "Pop", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
   { title: "Sacrifice", artist: "Elton John", performer: "Shane", genre: "Pop", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
   { title: "The Way You Look Tonight", artist: "Elton John", performer: "Shane", genre: "Pop", decade: "90s", timesPerformed: 1, duration: null, bpm: null },
+  { title: "The Phantom of the Opera", artist: "Andrew Lloyd Webber", performer: "Shane", genre: "Musical", decade: "80s", timesPerformed: 0, duration: 266, bpm: null, karaokeProvider: "KaraFun" },
 
   // DUETS & GROUP
   { title: "If I Had a Million Dollars", artist: "Barenaked Ladies", performer: "Duet", performerDetail: "Shane & Albert", genre: "Alternative", decade: "90s", timesPerformed: 4, duration: null, bpm: null },
   { title: "Handle with Care", artist: "Traveling Wilburys", performer: "Duet", performerDetail: "All Three", genre: "Classic Rock", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
   { title: "I'm Gonna Be (500 Miles)", artist: "The Proclaimers", performer: "Duet", performerDetail: "Shane & Albert", genre: "Alternative", decade: "80s", timesPerformed: 2, duration: null, bpm: null },
-  { title: "Love Me Do", artist: "The Beatles", performer: "Duet", performerDetail: "Albert & Shane", genre: "Classic Rock", decade: "60s", timesPerformed: 2, duration: null, bpm: null },
+  { title: "Love Me Do", artist: "The Beatles", performer: "Duet", performerDetail: "Albert & Shane", genre: "Classic Rock", decade: "60s", timesPerformed: 2, duration: 149, bpm: null, karaokeProvider: "Zoom Karaoke" },
   { title: "To All the Girls", artist: "Willie Nelson & Julio Iglesias", performer: "Duet", performerDetail: "Shane & Albert", genre: "Country", decade: "80s", timesPerformed: 1, duration: null, bpm: null },
   { title: "You Don't Bring Me Flowers", artist: "Neil Diamond & Barbra Streisand", performer: "Duet", performerDetail: "Jim & Albert", genre: "Pop", decade: "70s", timesPerformed: 1, duration: null, bpm: null },
   { title: "I Am a Man of Constant Sorrow", artist: "Soggy Bottom Boys", performer: "Duet", performerDetail: "All Three (Jim lead)", genre: "Folk Rock", decade: "00s", timesPerformed: 1, duration: null, bpm: null },
@@ -903,6 +917,8 @@ const showsData = [
         {t:"God Bless Texas", a:"Little Texas"}, {t:"Fast As You", a:"Dwight Yoakam"},
         {t:"Boot Scootin' Boogie", a:"Brooks & Dunn"},
         {t:"Proud Mary", a:"Creedence Clearwater Revival"},
+        {t:"Rebel Yell", a:"Billy Idol"}, {t:"All Summer Long", a:"Kid Rock"},
+        {t:"Desperado", a:"Eagles"}, {t:"Cracklin' Rosie", a:"Neil Diamond"},
       ],
       Shane: [
         {t:"How Do You Like Me Now", a:"Toby Keith"}, {t:"Just Help Yourself", a:"Tom Jones"},
@@ -935,6 +951,9 @@ const showsData = [
         {t:"We Just Disagree", a:"Dave Mason"}, {t:"The Love Boat Theme", a:"Jack Jones"},
         {t:"Way Down", a:"Elvis Presley"}, {t:"867-5309/Jenny", a:"Tommy Tutone"},
         {t:"You'll Never Find Another Love Like Mine", a:"Lou Rawls"},
+        {t:"Angel Eyes", a:"Jeff Healey Band"}, {t:"It's Now Or Never", a:"Elvis Presley"},
+        {t:"Heartbreak Hotel / Hound Dog / All Shook Up (Medley)", a:"Elvis Presley"},
+        {t:"The Most Beautiful Girl", a:"Charlie Rich"},
       ],
       Jim: [
         {t:"Have You Ever Seen the Rain", a:"CCR"}, {t:"Hurt So Good", a:"John Mellencamp"},
@@ -954,7 +973,7 @@ const showsData = [
         {t:"Les Bicyclettes de Belsize", a:"Engelbert Humperdinck"},
         {t:"WKRP in Cincinnati Theme", a:"Steve Carlisle"}, {t:"Folsom Prison Blues", a:"Johnny Cash"},
         {t:"Another Somebody Done Somebody Wrong Song", a:"B.J. Thomas"},
-        {t:"Stuck on You", a:"Elvis Presley"}, {t:"Ring of Fire", a:"Johnny Cash"},
+        {t:"Stuck on You", a:"Lionel Richie"}, {t:"Ring of Fire", a:"Johnny Cash"},
         {t:"El Paso", a:"Marty Robbins"},
       ],
       Duet: [
@@ -1092,6 +1111,7 @@ function renderLibrary() {
       <td><span class="times-badge">${s.timesPerformed}×</span></td>
       <td>${fmtDuration(s.duration)}</td>
       <td class="col-bpm">${s.bpm ? s.bpm : '<span class="tbd">—</span>'}</td>
+      <td class="col-provider"><span style="font-size:11px;color:var(--muted)">${s.karaokeProvider || '<span class="tbd">—</span>'}</span></td>
     </tr>
   `).join('');
 }
@@ -1419,6 +1439,9 @@ const durationData = {
   "Thank God I'm a Country Boy": 172, "Simple Man": 355, "Mustang Sally": 237,
   "Calling Baton Rouge": 171, "God Bless Texas": 226, "Fast As You": 150,
   "Boot Scootin' Boogie": 213, "Proud Mary": 188,
+  "Rebel Yell": 293, "All Summer Long": 312, "Desperado": 224, "Cracklin' Rosie": 191,
+  // Albert new
+  "Angel Eyes": 267, "It's Now Or Never": 203, "Heartbreak Hotel / Hound Dog / All Shook Up (Medley)": 206, "The Most Beautiful Girl": 177,
   // Shane
   "How Do You Like Me Now": 200, "Just Help Yourself": 178, "We Were in Love": 188,
   "Crocodile Rock": 236, "Rave On": 197, "Green Green Grass of Home": 150,
@@ -1429,7 +1452,7 @@ const durationData = {
   "Another Somebody Done Somebody Wrong Song": 215, "Midnight Special": 195,
   "All You Ever Do Is Bring Me Down": 188, "Guess That's Why They Call It the Blues": 309,
   "Quando Quando Quando": 176, "Knock Three Times": 169, "I'm Still Standing": 181,
-  "Danny Boy": 210, "Stuck on You": 114, "Ring of Fire": 156, "El Paso": 299,
+  "Danny Boy": 210, "Stuck on You": 207, "Ring of Fire": 156, "El Paso": 299,
   "What Are You Doing Sunday": 180, "Walk of Life": 251,
   "The Boys in the Bright White Sports Car": 196, "You Might Think": 194,
   "Dancing in the Dark": 242, "Red Red Wine": 187, "Footloose": 229,
@@ -1490,6 +1513,9 @@ const bpmData = {
   "Thank God I'm a Country Boy": 160, "Simple Man": 56, "Mustang Sally": 100,
   "Calling Baton Rouge": 148, "God Bless Texas": 130, "Fast As You": 162,
   "Boot Scootin' Boogie": 186, "Proud Mary": 121,
+  "Rebel Yell": 166, "All Summer Long": 103, "Desperado": 60, "Cracklin' Rosie": 127,
+  // Albert new
+  "Angel Eyes": 63, "It's Now Or Never": 126, "Heartbreak Hotel / Hound Dog / All Shook Up (Medley)": 92, "The Most Beautiful Girl": 103,
   // Shane
   "How Do You Like Me Now": 134, "Just Help Yourself": 148, "We Were in Love": 108,
   "Crocodile Rock": 150, "Rave On": 143, "Green Green Grass of Home": 74,
@@ -1530,6 +1556,8 @@ const songsToTry = [
   // Songs are added here by the assistant when Albert requests them.
   // Format: { title, artist, suggestedBy, genre, decade, status }
   // status: "Trying" | "Adopted"
+  { title: "Proud Mary", artist: "Creedence Clearwater Revival", suggestedBy: "Jim", genre: "Rock", decade: "60s", status: "Trying" },
+  { title: "Get Back", artist: "The Beatles", suggestedBy: "Albert", genre: "Classic Rock", decade: "60s", status: "Trying" },
   { title: "Jet Airliner", artist: "Steve Miller Band", suggestedBy: "Albert", genre: "Rock", decade: "70s", status: "Trying" },
   { title: "Cover of the Rolling Stone", artist: "Dr. Hook & the Medicine Show", suggestedBy: "Albert", genre: "Classic Rock", decade: "70s", status: "Trying" },
 ];
