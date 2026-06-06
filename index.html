@@ -126,6 +126,12 @@
   .add-lib-btn.added { border-color: var(--muted); color: var(--muted); cursor: default; font-size: 12px; font-weight: 600; }
   #toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: #0e1e14; border: 1px solid var(--jim); border-radius: 10px; color: var(--jim); font-size: 14px; font-weight: 600; padding: 10px 22px; pointer-events: none; opacity: 0; transition: opacity .25s; z-index: 9999; white-space: nowrap; }
   #toast.show { opacity: 1; }
+  /* Drag-and-drop */
+  .drag-handle { color: var(--muted); cursor: grab; font-size: 16px; padding: 0 6px 0 0; opacity: 0.45; user-select: none; flex-shrink: 0; }
+  .drag-handle:hover { opacity: 1; color: var(--accent); }
+  .set-song.sortable-drag { opacity: 0.4; }
+  .set-song.sortable-ghost { background: rgba(74,158,255,0.1) !important; outline: 1px dashed var(--accent); border-radius: 4px; }
+
   @media print {
     header, nav, .card:not(#setlist-card), .gen-left { display: none !important; }
     body { background: #fff; color: #000; }
@@ -222,6 +228,7 @@
   .show-song-item .s-artist { color: var(--muted); font-size: 12px; }
   .show-song-item .s-note { color: var(--duet); font-size: 11px; font-style: italic; }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
 </head>
 <body>
 
@@ -1469,8 +1476,9 @@ function renderOutline() {
         const sg = slot.song;
         const dur = sg.duration ? fmtDuration(sg.duration) : `~${fmtDuration(showAvgSecs)}`;
         const label = sg.performer === 'Duet' ? (sg.performerDetail || 'Duet') : sg.performer;
-        html += `<div class="set-song" style="cursor:pointer;${isSel ? 'outline:2px solid var(--accent);border-radius:4px;' : ''}"
+        html += `<div class="set-song" data-slot-id="${slot.id}" style="cursor:pointer;${isSel ? 'outline:2px solid var(--accent);border-radius:4px;' : ''}"
                    onclick="selectSlot(${slot.id})">
+          <span class="drag-handle" title="Drag to reorder">⠿</span>
           <span class="set-num">${i + 1}</span>
           <span class="performer-tag ${sg.performer}" style="min-width:58px;text-align:center;font-size:11px">${label}</span>
           <div class="set-song-info" style="flex:1">
@@ -1483,7 +1491,7 @@ function renderOutline() {
             title="Remove">×</button>
         </div>`;
       } else {
-        html += `<div class="set-song" onclick="selectSlot(${slot.id})"
+        html += `<div class="set-song" data-slot-id="${slot.id}" onclick="selectSlot(${slot.id})"
                    style="cursor:pointer;opacity:${isSel ? '1' : '0.45'};
                           ${isSel ? 'outline:2px solid var(--accent);border-radius:4px;background:rgba(74,158,255,0.06);' : ''}">
           <span class="set-num">${i + 1}</span>
@@ -1510,6 +1518,36 @@ function renderOutline() {
   </div>`;
 
   document.getElementById('setlist-output').innerHTML = html;
+  initSortable();
+}
+
+function initSortable() {
+  if (typeof Sortable === 'undefined') return;
+  document.querySelectorAll('#setlist-output .set-block').forEach(block => {
+    const setNum = parseInt(block.querySelector('.set-header span')?.textContent?.replace('Set ','')) || 0;
+    new Sortable(block, {
+      animation: 150,
+      handle: '.drag-handle',
+      draggable: '.set-song',
+      ghostClass: 'sortable-ghost',
+      dragClass: 'sortable-drag',
+      onEnd(evt) {
+        // Get ordered slot IDs from DOM after the drag
+        const newOrder = [...block.querySelectorAll('.set-song[data-slot-id]')]
+          .map(el => parseInt(el.dataset.slotId));
+        // Get the songs that were in this set, in old order
+        const setSlots = showSlots.filter(s => s.setNum === setNum);
+        const oldSongs = setSlots.map(s => s.song);
+        // Remap: assign songs to slots in new DOM order
+        newOrder.forEach((slotId, i) => {
+          const slot = showSlots.find(s => s.id === slotId);
+          if (slot) slot.song = oldSongs[i] !== undefined ? oldSongs[i] : null;
+        });
+        saveSetlistToStorage();
+        renderSetlistOutput();
+      }
+    });
+  });
 }
 
 function finalizeShow() {
