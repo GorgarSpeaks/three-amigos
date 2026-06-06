@@ -228,7 +228,7 @@
 <header>
   <h1>🎤 Three <span>Amigos</span> — Set List Creator</h1>
   <div class="header-right">
-    <div class="version-badge">v<span>0.91</span> &nbsp;·&nbsp; Jun 5, 2026</div>
+    <div class="version-badge">v<span>0.96</span> &nbsp;·&nbsp; Jun 5, 2026</div>
     <div class="performer-pills">
       <span class="pill albert">Albert</span>
       <span class="pill jim">Jim</span>
@@ -244,6 +244,9 @@
   <button onclick="showTab('try')">🎸 Songs to Try</button>
   <button onclick="showTab('roadmap')">🗺️ Planned Features</button>
 </nav>
+
+<div id="resume-banner" style="display:none;background:rgba(74,158,255,0.08);border-bottom:1px solid rgba(74,158,255,0.25);padding:12px 24px;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+</div>
 
 <main>
   <!-- LIBRARY TAB -->
@@ -313,6 +316,10 @@
       <div class="gen-left">
         <div class="card">
           <h2>Show Settings</h2>
+          <div class="form-group">
+            <label>Show Name</label>
+            <input type="text" id="show-name" placeholder="e.g. Bean and Olive — June 13, 2026" oninput="saveSetlistToStorage()">
+          </div>
           <div class="form-group">
             <label>Total Show Duration (minutes)</label>
             <input type="number" id="show-duration" value="180" min="60" max="480">
@@ -650,6 +657,40 @@ const songs = [
   { title: "Song of the South", artist: "Alabama", performer: "Jim", genre: "Country", decade: "80s", timesPerformed: 0, duration: 201, bpm: 130, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=qvrLagMH8p0" },
   { title: "Get a Haircut", artist: "George Thorogood", performer: "Jim", genre: "Blues Rock", decade: "90s", timesPerformed: 0, duration: 250, bpm: 120, karaokeProvider: "Rock n Roll Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=wHVdwGB8wu8" },
   { title: "Wild Horses", artist: "The Rolling Stones", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 0, duration: 348, bpm: 69, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=1s9TnTtbNhY" },
+  { title: "The Story of My Life", artist: "Neil Diamond", performer: "Jim", genre: "Pop", decade: "80s", timesPerformed: 0, duration: 225, bpm: 76, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=UNrNWhbtRz8" },
+  { title: "(Sittin' On) The Dock of the Bay", artist: "Otis Redding", performer: "Jim", genre: "R&B / Soul", decade: "60s", timesPerformed: 0, duration: 164, bpm: 76, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=mpMeSwQaQaI" },
+  { title: "The Joker", artist: "Steve Miller Band", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 0, duration: 257, bpm: 98, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=Pzl5uUpfi_s" },
+  { title: "Livin' on a Prayer", artist: "Bon Jovi", performer: "Jim", genre: "Classic Rock", decade: "80s", timesPerformed: 0, duration: 249, bpm: 123, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=Ep6G3P2v5ZA" },
+  { title: "She Talks to Angels", artist: "The Black Crowes", performer: "Jim", genre: "Classic Rock", decade: "90s", timesPerformed: 0, duration: 282, bpm: 72, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=C3sH4JqY5p8" },
+  { title: "Hard to Handle", artist: "The Black Crowes", performer: "Jim", genre: "Blues Rock", decade: "90s", timesPerformed: 0, duration: 216, bpm: 122, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=Q3zGJDiBteI" },
+  { title: "Wish You Were Here", artist: "Pink Floyd", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 0, duration: 340, bpm: 60, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=jlDX2AyRwaI" },
+  { title: "She Believes in Me", artist: "Kenny Rogers", performer: "Jim", genre: "Country", decade: "70s", timesPerformed: 0, duration: 255, bpm: 68, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=-InvxqoFO-0" },
+  { title: "You Decorated My Life", artist: "Kenny Rogers", performer: "Jim", genre: "Country", decade: "70s", timesPerformed: 0, duration: 195, bpm: 80, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=-X6ojJX5MrY" },
+  { title: "Just the Way You Are", artist: "Billy Joel", performer: "Jim", genre: "Pop", decade: "70s", timesPerformed: 0, duration: 293, bpm: 88, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=bDybK9SGCmI" },
+  { title: "Hold My Hand", artist: "Hootie & the Blowfish", performer: "Jim", genre: "Rock", decade: "90s", timesPerformed: 0, duration: 262, bpm: 92, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=oQj4uThAQxU" },
+  { title: "You Should Probably Leave", artist: "Chris Stapleton", performer: "Jim", genre: "Country", decade: "20s", timesPerformed: 0, duration: 190, bpm: 74, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=tBp0WvkZiYM" },
+  { title: "What Are You Listening To", artist: "Chris Stapleton", performer: "Jim", genre: "Country", decade: "20s", timesPerformed: 0, duration: 195, bpm: 90, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=BIRoSITsnXI" },
+  { title: "Small Town", artist: "John Mellencamp", performer: "Jim", genre: "Classic Rock", decade: "80s", timesPerformed: 0, duration: 189, bpm: 124, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=QImRQ5kmPgY" },
+  { title: "Time in a Bottle", artist: "Jim Croce", performer: "Jim", genre: "Folk Rock", decade: "70s", timesPerformed: 0, duration: 147, bpm: 90, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=Kkc1paicUH4" },
+  { title: "Danny's Song", artist: "Kenny Loggins", performer: "Jim", genre: "Folk Rock", decade: "70s", timesPerformed: 0, duration: 172, bpm: 118, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=HDmDEUkLkMw" },
+  { title: "Beth", artist: "KISS", performer: "Jim", genre: "Rock", decade: "70s", timesPerformed: 0, duration: 180, bpm: 72, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=QRkAAgSwpss" },
+  { title: "A Woman Like You", artist: "Johnny Reid", performer: "Jim", genre: "Country", decade: "10s", timesPerformed: 0, duration: 225, bpm: 80, karaokeProvider: "Dancing Frog Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=9NE49_Dt51c" },
+  { title: "Fired Up", artist: "Johnny Reid", performer: "Jim", genre: "Country", decade: "10s", timesPerformed: 0, duration: 210, bpm: 130, karaokeProvider: null, karaokeUrl: null },
+  { title: "Dance With Me", artist: "Johnny Reid", performer: "Jim", genre: "Country", decade: "10s", timesPerformed: 0, duration: 220, bpm: 80, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=YD2a0OQF8cU" },
+  { title: "I've Gotta Get a Message to You", artist: "Bee Gees", performer: "Jim", genre: "Pop", decade: "60s", timesPerformed: 0, duration: 175, bpm: 76, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=JlThKCKsQMg" },
+  { title: "Betty Lou's Gettin' Out Tonight", artist: "Bob Seger", performer: "Jim", genre: "Classic Rock", decade: "80s", timesPerformed: 0, duration: 211, bpm: 158, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=tE__dBa_Hgo" },
+  { title: "Break It to Them Gently", artist: "Burton Cummings", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 0, duration: 240, bpm: 68, karaokeProvider: null, karaokeUrl: null },
+  { title: "Angie", artist: "The Rolling Stones", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 0, duration: 272, bpm: 68, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=Cue2PUxgz68" },
+  { title: "Good Hearted Woman", artist: "Waylon Jennings", performer: "Jim", genre: "Country", decade: "70s", timesPerformed: 0, duration: 177, bpm: 130, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=YDAnmy--s44" },
+  { title: "Honesty", artist: "Billy Joel", performer: "Jim", genre: "Pop", decade: "70s", timesPerformed: 0, duration: 233, bpm: 86, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=ZDBa9XcQ59U" },
+  { title: "Best of My Love", artist: "Eagles", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 0, duration: 273, bpm: 100, karaokeProvider: "Peak Music", karaokeUrl: "https://www.youtube.com/watch?v=YnJsJfuwbyQ" },
+  { title: "Die a Happy Man", artist: "Thomas Rhett", performer: "Jim", genre: "Country", decade: "10s", timesPerformed: 0, duration: 230, bpm: 76, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=zSw3Iknj1-w" },
+  { title: "It's Your Love", artist: "Tim McGraw & Faith Hill", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 0, duration: 198, bpm: 88, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=3D9ETa5Ffyk" },
+  { title: "Slow Hand", artist: "Conway Twitty", performer: "Jim", genre: "Country", decade: "80s", timesPerformed: 0, duration: 208, bpm: 76, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=N6T7OOuKHo4" },
+  { title: "It's Only Make Believe", artist: "Conway Twitty", performer: "Jim", genre: "Country", decade: "50s", timesPerformed: 0, duration: 138, bpm: 96, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=VTrH38Y3XOA" },
+  { title: "Under the Boardwalk", artist: "The Drifters", performer: "Jim", genre: "R&B / Soul", decade: "60s", timesPerformed: 0, duration: 174, bpm: 88, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=qKlNkwVbTf8" },
+  { title: "When the Stars Come Out", artist: "Chris Stapleton", performer: "Jim", genre: "Country", decade: "20s", timesPerformed: 0, duration: 190, bpm: 74, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=SjG5_Jl8-G4" },
+  { title: "Vincent (Starry, Starry Night)", artist: "Don McLean", performer: "Jim", genre: "Folk Rock", decade: "70s", timesPerformed: 0, duration: 214, bpm: 76, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=F8bHuhHl_vY" },
 
   { title: "How Do You Like Me Now", artist: "Toby Keith", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 4, duration: 226, bpm: null, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=uDjmxD0YlTk" },
   { title: "Help Yourself", artist: "Tom Jones", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 4, duration: 177, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=Uh4-CQRge1c" },
@@ -733,6 +774,7 @@ const songs = [
   { title: "Bat Out of Hell", artist: "Meat Loaf", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 0, duration: 493, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=_5TCSy6bUiw" },
   { title: "Say You'll Stay Until Tomorrow", artist: "Tom Jones", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 0, duration: 225, bpm: null, karaokeProvider: "EasyKaraoke", karaokeUrl: "https://www.youtube.com/watch?v=qk1oCP_RUTM" },
   { title: "Release Me", artist: "Engelbert Humperdinck", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 0, duration: 206, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=Ix_Lonrz0Jk" },
+  { title: "Love Grows (Where My Rosemary Goes)", artist: "Edison Lighthouse", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 0, duration: 180, bpm: 120, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=Md_yxOqKYSk" },
 
   { title: "If I Had a Million Dollars", artist: "Barenaked Ladies", performer: "Duet", performerDetail: "Shane & Albert", genre: "Alternative", decade: "90s", timesPerformed: 4, duration: 265, bpm: null, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=OW_mkZF-RQQ" },
   { title: "Handle with Care", artist: "Traveling Wilburys", performer: "Duet", performerDetail: "All Three", genre: "Classic Rock", decade: "80s", timesPerformed: 2, duration: 193, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=GOp5a09tgi0" },
@@ -743,6 +785,9 @@ const songs = [
   { title: "I Am a Man of Constant Sorrow", artist: "Soggy Bottom Boys", performer: "Duet", performerDetail: "All Three (Jim lead)", genre: "Folk Rock", decade: "00s", timesPerformed: 1, duration: 264, bpm: null, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=Q9fF9kSdDzU" },
   { title: "End of the Line", artist: "Traveling Wilburys", performer: "Duet", performerDetail: "All Three", genre: "Classic Rock", decade: "80s", timesPerformed: 1, duration: 210, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=W5dG38Rvy_Q" },
   { title: "Elvira", artist: "Oak Ridge Boys", performer: "Duet", performerDetail: "All Three", genre: "Country", decade: "80s", timesPerformed: 0, duration: 232, bpm: 120, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=qLRCu4F_1Tg" },
+  { title: "My Own Backyard", artist: "Burton Cummings", performer: "Albert", genre: "Classic Rock", decade: "70s", timesPerformed: 0, duration: 220, bpm: null, karaokeProvider: null, karaokeUrl: null },
+  { title: "My Own Backyard", artist: "Burton Cummings", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 0, duration: 220, bpm: null, karaokeProvider: null, karaokeUrl: null },
+  { title: "My Own Backyard", artist: "Burton Cummings", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 0, duration: 220, bpm: null, karaokeProvider: null, karaokeUrl: null },
 ];
 
 // De-duplicate (remove the accidental duplicate "In the Summertime" added as placeholder)
@@ -1327,6 +1372,7 @@ function addSongToSlot(title) {
   const next = showSlots.slice(idx + 1).find(s => !s.song);
   selectedSlotId = next ? next.id : null;
 
+  saveSetlistToStorage();
   renderSongPicker();
   renderOutline();
 }
@@ -1345,6 +1391,7 @@ function addFromLibrary(title) {
   const idx = showSlots.indexOf(target);
   const next = showSlots.slice(idx + 1).find(s => !s.song);
   selectedSlotId = next ? next.id : null;
+  saveSetlistToStorage();
   renderSongPicker();
   renderOutline();
   renderLibrary();
@@ -1371,6 +1418,7 @@ function removeFromSlot(id) {
     slot.song = null;
     if (selectedSlotId === null) selectedSlotId = id;
   }
+  saveSetlistToStorage();
   renderSongPicker();
   renderOutline();
 }
@@ -1379,6 +1427,7 @@ function clearAllSlots() {
   if (!confirm('Clear all songs from the setlist?')) return;
   showSlots.forEach(s => s.song = null);
   selectedSlotId = showSlots[0]?.id ?? null;
+  localStorage.removeItem(SETLIST_STORAGE_KEY);
   renderSongPicker();
   renderOutline();
 }
@@ -1465,8 +1514,11 @@ function finalizeShow() {
   const breakMin = parseInt(document.getElementById('break-duration').value) || 10;
   const sets = breaks + 1;
   const date = new Date().toLocaleDateString('en-CA', {year:'numeric', month:'long', day:'numeric'});
+  const showName = document.getElementById('show-name').value.trim();
 
-  let text = `THREE AMIGOS — SHOW SETLIST\n${date}\n${'='.repeat(44)}\n\n`;
+  let text = `THREE AMIGOS — SHOW SETLIST\n`;
+  if (showName) text += `${showName}\n`;
+  text += `${date}\n${'='.repeat(44)}\n\n`;
   for (let s = 1; s <= sets; s++) {
     const setSlots = showSlots.filter(sl => sl.setNum === s);
     const setDur = Math.floor(setSlots.reduce((a, sl) => a + (sl.song ? (sl.song.duration || showAvgSecs) : showAvgSecs), 0) / 60);
@@ -1487,7 +1539,7 @@ function finalizeShow() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `Three Amigos Setlist — ${date}.txt`;
+  a.download = `Three Amigos Setlist${showName ? ' — ' + showName : ' — ' + date}.txt`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -1737,9 +1789,90 @@ function renderTryList() {
 }
 
 // ═══════════════════════════════════════════
+// SETLIST AUTO-SAVE / RESUME
+// ═══════════════════════════════════════════
+const SETLIST_STORAGE_KEY = 'threeAmigos_setlist_v1';
+
+function saveSetlistToStorage() {
+  const filled = showSlots.filter(s => s.song);
+  if (!filled.length) { localStorage.removeItem(SETLIST_STORAGE_KEY); return; }
+  const settings = {
+    showName: document.getElementById('show-name').value,
+    showDuration: document.getElementById('show-duration').value,
+    breakCount: document.getElementById('break-count').value,
+    breakDuration: document.getElementById('break-duration').value,
+    avgDuration: document.getElementById('avg-duration').value,
+    performers: {
+      albert: document.getElementById('p-albert').checked,
+      jim: document.getElementById('p-jim').checked,
+      shane: document.getElementById('p-shane').checked
+    }
+  };
+  const slots = showSlots.map(s => ({ setNum: s.setNum, slotNum: s.slotNum, songTitle: s.song ? s.song.title : null }));
+  localStorage.setItem(SETLIST_STORAGE_KEY, JSON.stringify({ settings, slots, savedAt: new Date().toISOString() }));
+}
+
+function checkForSavedSetlist() {
+  const raw = localStorage.getItem(SETLIST_STORAGE_KEY);
+  if (!raw) return;
+  try {
+    const data = JSON.parse(raw);
+    const filledSlots = data.slots.filter(s => s.songTitle);
+    if (!filledSlots.length) return;
+    window.__savedSetlistData = data;
+    const date = new Date(data.savedAt).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' });
+    const banner = document.getElementById('resume-banner');
+    banner.innerHTML = `
+      <span style="font-size:14px;color:var(--text)">📋 You have an unfinished setlist from <strong>${date}</strong> — ${filledSlots.length} song${filledSlots.length !== 1 ? 's' : ''} filled</span>
+      <div style="display:flex;gap:8px;flex-shrink:0">
+        <button onclick="resumeSavedSetlist()" style="background:var(--accent);border:none;border-radius:7px;color:#fff;cursor:pointer;font-size:13px;font-weight:700;padding:7px 16px;transition:opacity .15s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">▶ Resume</button>
+        <button onclick="dismissResumeBanner()" style="background:none;border:1px solid var(--border);border-radius:7px;color:var(--muted);cursor:pointer;font-size:13px;padding:7px 14px">Discard</button>
+      </div>`;
+    banner.style.display = 'flex';
+  } catch(e) {}
+}
+
+function resumeSavedSetlist() {
+  const data = window.__savedSetlistData;
+  if (!data) return;
+  const s = data.settings;
+  document.getElementById('show-name').value = s.showName || '';
+  document.getElementById('show-duration').value = s.showDuration;
+  document.getElementById('break-count').value = s.breakCount;
+  document.getElementById('break-duration').value = s.breakDuration;
+  document.getElementById('avg-duration').value = s.avgDuration;
+  document.getElementById('p-albert').checked = s.performers.albert;
+  document.getElementById('p-jim').checked = s.performers.jim;
+  document.getElementById('p-shane').checked = s.performers.shane;
+  buildShowOutline();
+  let restored = 0;
+  data.slots.forEach(saved => {
+    if (!saved.songTitle) return;
+    const slot = showSlots.find(sl => sl.setNum === saved.setNum && sl.slotNum === saved.slotNum);
+    if (!slot) return;
+    const song = uniqueSongs.find(sg => sg.title === saved.songTitle);
+    if (song) { slot.song = song; restored++; }
+  });
+  selectedSlotId = showSlots.find(s => !s.song)?.id ?? null;
+  renderSongPicker();
+  renderOutline();
+  renderLibrary();
+  document.getElementById('resume-banner').style.display = 'none';
+  showTab('generator');
+  showToast(`✓ Setlist resumed — ${restored} song${restored !== 1 ? 's' : ''} restored`);
+}
+
+function dismissResumeBanner() {
+  document.getElementById('resume-banner').style.display = 'none';
+  localStorage.removeItem(SETLIST_STORAGE_KEY);
+  window.__savedSetlistData = null;
+}
+
+// ═══════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════
 renderLibrary();
+checkForSavedSetlist();
 
 // ═══════════════════════════════════════════
 // VIEW MODE — ?view=library hides all tabs
