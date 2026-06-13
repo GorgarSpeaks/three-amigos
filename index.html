@@ -235,7 +235,7 @@
 <header>
   <h1>🎤 Three <span>Amigos</span> — Set List Creator</h1>
   <div class="header-right">
-    <div class="version-badge">v<span>1.05</span> &nbsp;·&nbsp; Jun 12, 2026</div>
+    <div class="version-badge">v<span>1.06</span> &nbsp;·&nbsp; Jun 13, 2026</div>
     <div class="performer-pills">
       <span class="pill albert">Albert</span>
       <span class="pill jim">Jim</span>
@@ -383,6 +383,9 @@
               <button class="print-btn" id="clear-btn" onclick="clearAllSlots()" style="display:none">↺ Reset</button>
               <button class="print-btn" id="finalize-btn" onclick="finalizeShow()" style="display:none;color:var(--jim);border-color:var(--jim)">✓ Save Setlist</button>
               <button class="print-btn" onclick="window.print()" id="print-btn" style="display:none">🖨 Print</button>
+              <button class="print-btn" onclick="exportSetlistJSON()" id="export-btn" style="display:none">📤 Export</button>
+              <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="importSetlistJSON(this)">
+              <button class="print-btn" onclick="document.getElementById('import-file-input').click()" id="import-btn">📥 Import</button>
             </div>
           </div>
           <div class="setlist-output" id="setlist-output">
@@ -520,18 +523,18 @@ const songs = [
   // ALBERT'S SONGS
   { title: "— FILLER —", artist: "Placeholder", performer: "Albert", genre: "Country", decade: "70s", timesPerformed: 0, duration: 210, bpm: null, karaokeProvider: null, karaokeUrl: null },
   { title: "Tempted", artist: "Marty Stuart", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 5, duration: 201, bpm: null, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=FwtGcRfiAww" },
-  { title: "Dance the Night Away", artist: "The Mavericks", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 5, duration: 262, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=_m1Awj0aqmI" },
-  { title: "I Only Want to Be With You", artist: "Hootie & the Blowfish", performer: "Albert", genre: "Rock", decade: "90s", timesPerformed: 4, duration: 237, bpm: null, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=ux8A-9oq5JY" },
-  { title: "Bad Bad Leroy Brown", artist: "Jim Croce", performer: "Albert", genre: "Folk Rock", decade: "70s", timesPerformed: 4, duration: 191, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=-tGiF-whYTA" },
+  { title: "Dance the Night Away", artist: "The Mavericks", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 5, duration: 262, bpm: null, startOffset: 4, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=_m1Awj0aqmI" },
+  { title: "I Only Want to Be With You", artist: "Hootie & the Blowfish", performer: "Albert", genre: "Rock", decade: "90s", timesPerformed: 4, duration: 237, bpm: null, startOffset: 6, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=ux8A-9oq5JY" },
+  { title: "Bad Bad Leroy Brown", artist: "Jim Croce", performer: "Albert", genre: "Folk Rock", decade: "70s", timesPerformed: 4, duration: 191, bpm: null, startOffset: 3, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=-tGiF-whYTA" },
   { title: "The Breakup Song", artist: "The Greg Kihn Band", performer: "Albert", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 4, duration: 185, bpm: null, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=Zbz_K4MeZSM" },
-  { title: "Rock This Town", artist: "Stray Cats", performer: "Albert", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 4, duration: 204, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=DBFHEAA1E78" },
+  { title: "Rock This Town", artist: "Stray Cats", performer: "Albert", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 4, duration: 204, bpm: null, startOffset: 3, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=DBFHEAA1E78" },
   { title: "Suspicious Minds", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 4, duration: 231, bpm: null, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=C5Y0ZjUDDnE" },
-  { title: "Burning Love", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "70s", timesPerformed: 4, duration: 182, bpm: null, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=z4Qgm4aJtUU" },
+  { title: "Burning Love", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "70s", timesPerformed: 4, duration: 182, bpm: null, startOffset: 5, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=z4Qgm4aJtUU" },
   { title: "Pocket of a Clown", artist: "Dwight Yoakam", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 4, duration: 187, bpm: null, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=D9a3P5JT91I" },
-  { title: "Rock Me Gently", artist: "Andy Kim", performer: "Albert", genre: "Pop", decade: "70s", timesPerformed: 3, duration: 224, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=-xNMYme8Ttw" },
+  { title: "Rock Me Gently", artist: "Andy Kim", performer: "Albert", genre: "Pop", decade: "70s", timesPerformed: 3, duration: 224, bpm: null, startOffset: 3, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=-xNMYme8Ttw" },
   { title: "Spinning Wheel", artist: "Blood, Sweat & Tears", performer: "Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 3, duration: 230, bpm: null, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=6SqHPO8JC4o" },
-  { title: "Love Somebody", artist: "Morgan Wallen", performer: "Albert", genre: "Country", decade: "20s", timesPerformed: 3, duration: 214, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=Jsc4anXwyB4" },
-  { title: "Small Town Saturday Night", artist: "Hal Ketchum", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 3, duration: 182, bpm: null, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=OmP0cedlvoQ" },
+  { title: "Love Somebody", artist: "Morgan Wallen", performer: "Albert", genre: "Country", decade: "20s", timesPerformed: 3, duration: 214, bpm: null, startOffset: 8, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=Jsc4anXwyB4" },
+  { title: "Small Town Saturday Night", artist: "Hal Ketchum", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 3, duration: 182, bpm: null, startOffset: 6, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=OmP0cedlvoQ" },
   { title: "Chattahoochee", artist: "Alan Jackson", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 2, duration: 154, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=uvcIbAlZRsM" },
   { title: "She's Got the Rhythm", artist: "Alan Jackson", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 2, duration: 149, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=sCCv_ZWqOs0" },
   { title: "Treat Me Nice", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "50s", timesPerformed: 2, duration: 139, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=TGzuj2UajWk" },
@@ -543,13 +546,13 @@ const songs = [
   { title: "Don't Pull Your Love", artist: "Hamilton, Joe Frank & Reynolds", performer: "Albert", genre: "Pop", decade: "70s", timesPerformed: 2, duration: 173, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=-dOMB9bqr58" },
   { title: "867-5309/Jenny", artist: "Tommy Tutone", performer: "Albert", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 2, duration: 240, bpm: null, karaokeProvider: "PARTY TYME KARAOKE CHANNEL", karaokeUrl: "https://www.youtube.com/watch?v=joJgqYOziYw" },
   { title: "Running Down a Dream", artist: "Tom Petty", performer: "Albert", genre: "Rock", decade: "80s", timesPerformed: 2, duration: 214, bpm: null, karaokeProvider: "Echoe Entertainment", karaokeUrl: "https://www.youtube.com/watch?v=QoyrwexpymI" },
-  { title: "Little Less Conversation", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 2, duration: 209, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=EHpvmeOOz7c" },
+  { title: "Little Less Conversation", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 2, duration: 209, bpm: null, startOffset: 3, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=EHpvmeOOz7c" },
   { title: "Devil Went Down to Georgia", artist: "Charlie Daniels Band", performer: "Albert", genre: "Country", decade: "70s", timesPerformed: 2, duration: 220, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=eH4pkOBV9w8" },
   { title: "You'll Never Find Another Love Like Mine", artist: "Lou Rawls", performer: "Albert", genre: "R&B / Soul", decade: "70s", timesPerformed: 1, duration: 279, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=hB2a13mE2hY" },
   { title: "Angel Eyes", artist: "Jeff Healey Band", performer: "Albert", genre: "Classic Rock", decade: "80s", timesPerformed: 1, duration: 294, bpm: 63, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=oo2KxS6wgyA" },
   { title: "It's Now Or Never", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 1, duration: 203, bpm: 126, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=sh6iBn-q8WI" },
-  { title: "Heartbreak Hotel / Hound Dog / All Shook Up (Medley)", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "50s", timesPerformed: 1, duration: 206, bpm: 92, karaokeProvider: "Steve Floyd", karaokeUrl: "https://www.youtube.com/watch?v=17S-WwbxNs0" },
-  { title: "The Most Beautiful Girl", artist: "Charlie Rich", performer: "Albert", genre: "Country", decade: "70s", timesPerformed: 1, duration: 177, bpm: 103, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=3qy--dqW2Go" },
+  { title: "Heartbreak Hotel / Hound Dog / All Shook Up (Medley)", artist: "Elvis Presley", performer: "Albert", genre: "Classic Rock", decade: "50s", timesPerformed: 1, duration: 206, bpm: 92, startOffset: 3, karaokeProvider: "Steve Floyd", karaokeUrl: "https://www.youtube.com/watch?v=17S-WwbxNs0" },
+  { title: "The Most Beautiful Girl", artist: "Charlie Rich", performer: "Albert", genre: "Country", decade: "70s", timesPerformed: 1, duration: 177, bpm: 103, startOffset: 3, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=3qy--dqW2Go" },
   { title: "You Made Me So Very Happy", artist: "Blood, Sweat & Tears", performer: "Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 1, duration: 256, bpm: null, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=ID6QmxvgiEM" },
   { title: "Tainted Love", artist: "Soft Cell", performer: "Albert", genre: "New Wave", decade: "80s", timesPerformed: 1, duration: 164, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=WGbHRHRYo20" },
   { title: "Don't You Forget About Me", artist: "Simple Minds", performer: "Albert", genre: "New Wave", decade: "80s", timesPerformed: 1, duration: 280, bpm: null, karaokeProvider: "Sing King", karaokeUrl: "https://www.youtube.com/watch?v=OozUwqWbXzc" },
@@ -579,7 +582,7 @@ const songs = [
   { title: "Black Cars", artist: "Gino Vannelli", performer: "Albert", genre: "Pop", decade: "80s", timesPerformed: 0, duration: 199, bpm: null, karaokeProvider: "MEE Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=OHb7afyJ-O4" },
   { title: "Sunglasses at Night", artist: "Corey Hart", performer: "Albert", genre: "New Wave", decade: "80s", timesPerformed: 0, duration: 328, bpm: null, karaokeProvider: "Let's Sing Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=r-az--r_EbA" },
   { title: "I Believe in You", artist: "Don Williams", performer: "Albert", genre: "Country", decade: "70s", timesPerformed: 0, duration: 259, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=WnR7yUqlhWk" },
-  { title: "Mercury Blues", artist: "Alan Jackson", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 0, duration: 229, bpm: null, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=-mwRKMBauRE" },
+  { title: "Mercury Blues", artist: "Alan Jackson", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 0, duration: 229, bpm: null, startOffset: 6, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=-mwRKMBauRE" },
   // JIM'S SONGS
   { title: "Enid", artist: "Barenaked Ladies", performer: "Albert", genre: "Alternative", decade: "90s", timesPerformed: 0, duration: 244, bpm: null, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=PHw8B1DekPI" },
   { title: "Rosalee", artist: "Stacy Dean Campbell", performer: "Albert", genre: "Country", decade: "90s", timesPerformed: 0, duration: 200, bpm: null, karaokeProvider: "Ameritz", karaokeUrl: "https://www.youtube.com/watch?v=o1eXITGm8_M" },
@@ -593,18 +596,18 @@ const songs = [
   { title: "Peace in the Valley", artist: "Elvis Presley", performer: "Albert", genre: "Gospel", decade: "50s", timesPerformed: 0, duration: 216, bpm: null, karaokeProvider: "Nicolas Nuguid", karaokeUrl: "https://www.youtube.com/watch?v=WiJfKJctmS8" },
 
   { title: "— FILLER —", artist: "Placeholder", performer: "Jim", genre: "Country", decade: "70s", timesPerformed: 0, duration: 210, bpm: null, karaokeProvider: null, karaokeUrl: null },
-  { title: "Have You Ever Seen the Rain", artist: "Creedence Clearwater Revival", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 4, duration: 173, bpm: null, karaokeProvider: "Sing King", karaokeUrl: "https://www.youtube.com/watch?v=8jcYl__Tk2M" },
+  { title: "Have You Ever Seen the Rain", artist: "Creedence Clearwater Revival", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 4, duration: 173, bpm: null, startOffset: 4, karaokeProvider: "Sing King", karaokeUrl: "https://www.youtube.com/watch?v=8jcYl__Tk2M" },
   { title: "Hurt So Good", artist: "John Mellencamp", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 4, duration: 231, bpm: null, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=gbwRIbTmiqw" },
-  { title: "Sweet Caroline", artist: "Neil Diamond", performer: "Jim", genre: "Pop", decade: "60s", timesPerformed: 4, duration: 234, bpm: null, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=4Vgstvv3u1M" },
-  { title: "Friends in Low Places", artist: "Garth Brooks", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 3, duration: 254, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=yUzq9Q1tPxE" },
-  { title: "Tennessee Whiskey", artist: "Chris Stapleton", performer: "Jim", genre: "Country", decade: "10s", timesPerformed: 3, duration: 297, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=AScdyDHCdSE" },
+  { title: "Sweet Caroline", artist: "Neil Diamond", performer: "Jim", genre: "Pop", decade: "60s", timesPerformed: 4, duration: 234, bpm: null, startOffset: 8, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=4Vgstvv3u1M" },
+  { title: "Friends in Low Places", artist: "Garth Brooks", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 3, duration: 254, bpm: null, startOffset: 3, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=yUzq9Q1tPxE" },
+  { title: "Tennessee Whiskey", artist: "Chris Stapleton", performer: "Jim", genre: "Country", decade: "10s", timesPerformed: 3, duration: 297, bpm: null, startOffset: 3, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=AScdyDHCdSE" },
   { title: "Take Me Home Country Roads", artist: "John Denver", performer: "Jim", genre: "Folk Rock", decade: "70s", timesPerformed: 3, duration: 197, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=NzLTH93B620" },
   { title: "I Like It I Love It", artist: "Tim McGraw", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 3, duration: 206, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=df6xsFAPUr0" },
   { title: "Against the Wind", artist: "Bob Seger", performer: "Jim", genre: "Classic Rock", decade: "80s", timesPerformed: 2, duration: 345, bpm: null, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=AmDBT3qt0po" },
   { title: "Paper in Fire", artist: "John Mellencamp", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 2, duration: 248, bpm: null, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=2ZWeJY340FU" },
   { title: "Good Ol' Boys (Dukes of Hazzard Theme)", artist: "Waylon Jennings", performer: "Jim", genre: "Country", decade: "70s", timesPerformed: 2, duration: 123, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=6mfX_blCFHE" },
   { title: "Bad Moon Rising", artist: "Creedence Clearwater Revival", performer: "Jim", genre: "Classic Rock", decade: "60s", timesPerformed: 2, duration: 145, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=moiyvuaUrUQ" },
-  { title: "Sweet Home Alabama", artist: "Lynyrd Skynyrd", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 2, duration: 280, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=cbbQcJyXCrA" },
+  { title: "Sweet Home Alabama", artist: "Lynyrd Skynyrd", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 2, duration: 280, bpm: null, startOffset: 4, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=cbbQcJyXCrA" },
   { title: "Brown Eyed Girl", artist: "Van Morrison", performer: "Jim", genre: "Classic Rock", decade: "60s", timesPerformed: 2, duration: 200, bpm: null, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=E79oSL3e0L8" },
   { title: "Take It Easy", artist: "Eagles", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 2, duration: 217, bpm: null, karaokeProvider: "Vocal Star Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=o5Slno6akHQ" },
   { title: "I Drink Alone", artist: "George Thorogood", performer: "Jim", genre: "Blues Rock", decade: "80s", timesPerformed: 2, duration: 273, bpm: null, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=uAJef25LoVw" },
@@ -613,9 +616,9 @@ const songs = [
   { title: "Something Like That", artist: "Tim McGraw", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 2, duration: 180, bpm: null, karaokeProvider: "MrEntertainerKaraoke", karaokeUrl: "https://www.youtube.com/watch?v=rxH_HTYaZ8E" },
   { title: "Mountain Music", artist: "Alabama", performer: "Jim", genre: "Country", decade: "80s", timesPerformed: 2, duration: 257, bpm: null, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=3dImOz7ctSM" },
   { title: "White Wedding", artist: "Billy Idol", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: 212, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=e-ekZzkvHb4" },
-  { title: "Twist and Shout", artist: "The Beatles", performer: "Jim", genre: "Classic Rock", decade: "60s", timesPerformed: 1, duration: 156, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=tFm1Xt7gU0k" },
+  { title: "Twist and Shout", artist: "The Beatles", performer: "Jim", genre: "Classic Rock", decade: "60s", timesPerformed: 1, duration: 156, bpm: null, startOffset: 3, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=tFm1Xt7gU0k" },
   { title: "Mony Mony", artist: "Billy Idol", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: 234, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=o-XD9TQ71hQ" },
-  { title: "Forever in Blue Jeans", artist: "Neil Diamond", performer: "Jim", genre: "Pop", decade: "70s", timesPerformed: 1, duration: 234, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=DvIdPfza9vA" },
+  { title: "Forever in Blue Jeans", artist: "Neil Diamond", performer: "Jim", genre: "Pop", decade: "70s", timesPerformed: 1, duration: 234, bpm: null, startOffset: 3, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=DvIdPfza9vA" },
   { title: "Cuts Like a Knife", artist: "Bryan Adams", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: 298, bpm: null, karaokeProvider: "Rock Karaoke Channel", karaokeUrl: "https://www.youtube.com/watch?v=zXpADJeeDxs" },
   { title: "Cherry Bomb", artist: "John Mellencamp", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: 303, bpm: null, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=K6y-e9OQcEU" },
   { title: "Power of Love", artist: "Huey Lewis & the News", performer: "Jim", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: 234, bpm: null, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=jgZ5lwlaSp4" },
@@ -624,7 +627,7 @@ const songs = [
   { title: "Bad to the Bone", artist: "George Thorogood", performer: "Jim", genre: "Blues Rock", decade: "80s", timesPerformed: 1, duration: 301, bpm: null, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=fDjkjA2UnCE" },
   { title: "Mandy", artist: "Barry Manilow", performer: "Jim", genre: "Pop", decade: "70s", timesPerformed: 1, duration: 212, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=ZwVOVV0sWTM" },
   { title: "Desiree", artist: "Neil Diamond", performer: "Jim", genre: "Pop", decade: "70s", timesPerformed: 1, duration: 201, bpm: null, karaokeProvider: "MrEntertainerKaraoke", karaokeUrl: "https://www.youtube.com/watch?v=dKdM12m6skc" },
-  { title: "Brother Love's Travelling Salvation Show", artist: "Neil Diamond", performer: "Jim", genre: "Pop", decade: "60s", timesPerformed: 1, duration: 215, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=QgXkxqIubaw" },
+  { title: "Brother Love's Travelling Salvation Show", artist: "Neil Diamond", performer: "Jim", genre: "Pop", decade: "60s", timesPerformed: 1, duration: 215, bpm: null, startOffset: 3, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=QgXkxqIubaw" },
   { title: "Looking Out My Back Door", artist: "Creedence Clearwater Revival", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: 157, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=zxI24ZEyF5Q" },
   { title: "Hotel California", artist: "Eagles", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: 400, bpm: null, karaokeProvider: "FT", karaokeUrl: "https://www.youtube.com/watch?v=S1LZFrCwj6c" },
   { title: "Cherry Cherry", artist: "Neil Diamond", performer: "Jim", genre: "Pop", decade: "60s", timesPerformed: 1, duration: 179, bpm: null, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=EM4YeIBHiBM" },
@@ -634,8 +637,8 @@ const songs = [
   { title: "Calling Baton Rouge", artist: "Garth Brooks", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 1, duration: 156, bpm: null, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=bVax2eJQsoE" },
   { title: "God Blessed Texas", artist: "Little Texas", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 1, duration: 221, bpm: null, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=KyQ7AKVQ7XI" },
   { title: "Fast As You", artist: "Dwight Yoakam", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 1, duration: 287, bpm: null, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=91GXGAQbb4c" },
-  { title: "Boot Scootin' Boogie", artist: "Brooks & Dunn", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 1, duration: 206, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=IWJ3j65Xvs4" },
-  { title: "Proud Mary", artist: "Creedence Clearwater Revival", performer: "Jim", genre: "Rock", decade: "60s", timesPerformed: 0, duration: 192, bpm: 121, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=cjjGhcsgsck" },
+  { title: "Boot Scootin' Boogie", artist: "Brooks & Dunn", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 1, duration: 206, bpm: null, startOffset: 8, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=IWJ3j65Xvs4" },
+  { title: "Proud Mary", artist: "Creedence Clearwater Revival", performer: "Jim", genre: "Rock", decade: "60s", timesPerformed: 0, duration: 192, bpm: 121, startOffset: 4, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=cjjGhcsgsck" },
   { title: "Two Out of Three Ain't Bad", artist: "Meat Loaf", performer: "Jim", genre: "Rock", decade: "70s", timesPerformed: 0, duration: 327, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=_IQ0tb1rSL4" },
   { title: "Leaving on a Jet Plane", artist: "John Denver", performer: "Jim", genre: "Folk Rock", decade: "70s", timesPerformed: 0, duration: 225, bpm: null, karaokeProvider: "Sing King", karaokeUrl: "https://www.youtube.com/watch?v=SXdzPT0lOP8" },
   { title: "Rebel Yell", artist: "Billy Idol", performer: "Jim", genre: "Rock", decade: "80s", timesPerformed: 1, duration: 293, bpm: 166, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=Bvm-DFC7WIc" },
@@ -678,7 +681,7 @@ const songs = [
   { title: "She Believes in Me", artist: "Kenny Rogers", performer: "Jim", genre: "Country", decade: "70s", timesPerformed: 0, duration: 255, bpm: 68, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=-InvxqoFO-0" },
   { title: "You Decorated My Life", artist: "Kenny Rogers", performer: "Jim", genre: "Country", decade: "70s", timesPerformed: 0, duration: 195, bpm: 80, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=-X6ojJX5MrY" },
   { title: "Just the Way You Are", artist: "Billy Joel", performer: "Jim", genre: "Pop", decade: "70s", timesPerformed: 0, duration: 293, bpm: 88, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=bDybK9SGCmI" },
-  { title: "Hold My Hand", artist: "Hootie & the Blowfish", performer: "Jim", genre: "Rock", decade: "90s", timesPerformed: 0, duration: 262, bpm: 92, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=oQj4uThAQxU" },
+  { title: "Hold My Hand", artist: "Hootie & the Blowfish", performer: "Jim", genre: "Rock", decade: "90s", timesPerformed: 0, duration: 262, bpm: 92, startOffset: 14, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=oQj4uThAQxU" },
   { title: "You Should Probably Leave", artist: "Chris Stapleton", performer: "Jim", genre: "Country", decade: "20s", timesPerformed: 0, duration: 190, bpm: 74, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=tBp0WvkZiYM" },
   { title: "What Are You Listening To", artist: "Chris Stapleton", performer: "Jim", genre: "Country", decade: "20s", timesPerformed: 0, duration: 195, bpm: 90, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=BIRoSITsnXI" },
   { title: "Small Town", artist: "John Cougar Mellencamp", performer: "Jim", genre: "Classic Rock", decade: "80s", timesPerformed: 0, duration: 189, bpm: 124, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=QImRQ5kmPgY" },
@@ -698,7 +701,7 @@ const songs = [
   { title: "Die a Happy Man", artist: "Thomas Rhett", performer: "Jim", genre: "Country", decade: "10s", timesPerformed: 0, duration: 230, bpm: 76, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=zSw3Iknj1-w" },
   { title: "It's Your Love", artist: "Tim McGraw & Faith Hill", performer: "Jim", genre: "Country", decade: "90s", timesPerformed: 0, duration: 198, bpm: 88, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=3D9ETa5Ffyk" },
   { title: "Slow Hand", artist: "Conway Twitty", performer: "Jim", genre: "Country", decade: "80s", timesPerformed: 0, duration: 208, bpm: 76, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=N6T7OOuKHo4" },
-  { title: "It's Only Make Believe", artist: "Conway Twitty", performer: "Jim", genre: "Country", decade: "50s", timesPerformed: 0, duration: 138, bpm: 96, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=VTrH38Y3XOA" },
+  { title: "It's Only Make Believe", artist: "Conway Twitty", performer: "Jim", genre: "Country", decade: "50s", timesPerformed: 0, duration: 138, bpm: 96, startOffset: 6, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=VTrH38Y3XOA" },
   { title: "It's Only Make Believe", artist: "Conway Twitty", performer: "Shane", genre: "Country", decade: "50s", timesPerformed: 0, duration: 138, bpm: 96, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=VTrH38Y3XOA" },
   { title: "Under the Boardwalk", artist: "The Drifters", performer: "Jim", genre: "R&B / Soul", decade: "60s", timesPerformed: 0, duration: 174, bpm: 88, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=qKlNkwVbTf8" },
   { title: "When the Stars Come Out", artist: "Chris Stapleton", performer: "Jim", genre: "Country", decade: "20s", timesPerformed: 0, duration: 190, bpm: 74, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=SjG5_Jl8-G4" },
@@ -706,11 +709,11 @@ const songs = [
   { title: "All My Rowdy Friends Are Coming Over Tonight", artist: "Hank Williams Jr.", performer: "Jim", genre: "Country", decade: "80s", timesPerformed: 0, duration: 177, bpm: null, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=sqwrAt2unws" },
 
   { title: "— FILLER —", artist: "Placeholder", performer: "Shane", genre: "Country", decade: "70s", timesPerformed: 0, duration: 210, bpm: null, karaokeProvider: null, karaokeUrl: null },
-  { title: "Having a Party", artist: "Rod Stewart", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 0, duration: 269, bpm: null, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=87NIxF2RaNE" },
+  { title: "Having a Party", artist: "Rod Stewart", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 0, duration: 269, bpm: null, startOffset: 9, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=87NIxF2RaNE" },
   { title: "How Do You Like Me Now", artist: "Toby Keith", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 4, duration: 226, bpm: null, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=uDjmxD0YlTk" },
-  { title: "Help Yourself", artist: "Tom Jones", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 4, duration: 177, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=Uh4-CQRge1c" },
-  { title: "We Were in Love", artist: "Toby Keith", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 3, duration: 256, bpm: null, karaokeProvider: "MrEntertainerKaraoke", karaokeUrl: "https://www.youtube.com/watch?v=tM8wvT9pmys" },
-  { title: "Crocodile Rock", artist: "Elton John", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 3, duration: 226, bpm: null, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=BWGK8po13OE" },
+  { title: "Help Yourself", artist: "Tom Jones", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 4, duration: 177, bpm: null, startOffset: 3, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=Uh4-CQRge1c" },
+  { title: "We Were in Love", artist: "Toby Keith", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 3, duration: 256, bpm: null, startOffset: 6, karaokeProvider: "MrEntertainerKaraoke", karaokeUrl: "https://www.youtube.com/watch?v=tM8wvT9pmys" },
+  { title: "Crocodile Rock", artist: "Elton John", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 3, duration: 226, bpm: null, startOffset: 3, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=BWGK8po13OE" },
   { title: "Rave On", artist: "John Cougar Mellencamp", performer: "Shane", genre: "Classic Rock", decade: "50s", timesPerformed: 3, duration: 195, bpm: null, karaokeProvider: "MEE Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=vWJURVU84Do" },
   { title: "Green Green Grass of Home", artist: "Tom Jones", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 3, duration: 195, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=eDKMRSbW5P8" },
   { title: "You'll Always Be Loved By Me", artist: "Brooks & Dunn", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 3, duration: 196, bpm: null, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=rkb8hyU-J2g" },
@@ -718,13 +721,13 @@ const songs = [
   { title: "Pretty Woman", artist: "Roy Orbison", performer: "Shane", genre: "Classic Rock", decade: "60s", timesPerformed: 3, duration: 189, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=FYrnYxIE37w" },
   { title: "Hard Luck Woman", artist: "KISS", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 3, duration: 217, bpm: null, karaokeProvider: "Cain Canizalez", karaokeUrl: "https://www.youtube.com/watch?v=NFYrz1qMrKw" },
   { title: "She's Not Cryin' Anymore", artist: "Billy Ray Cyrus", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 2, duration: 228, bpm: null, karaokeProvider: "EasyKaraoke", karaokeUrl: "https://www.youtube.com/watch?v=aqZkJ5agvVE" },
-  { title: "I Love a Rainy Night", artist: "Eddie Rabbitt", performer: "Shane", genre: "Country", decade: "80s", timesPerformed: 2, duration: 200, bpm: null, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=73zfTWqFhTI" },
+  { title: "I Love a Rainy Night", artist: "Eddie Rabbitt", performer: "Shane", genre: "Country", decade: "80s", timesPerformed: 2, duration: 200, bpm: null, startOffset: 5, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=73zfTWqFhTI" },
   { title: "If You Could Read My Mind", artist: "Gordon Lightfoot", performer: "Shane", genre: "Folk Rock", decade: "70s", timesPerformed: 2, duration: 234, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=9319mWiYoC0" },
   { title: "Les Bicyclettes de Belsize", artist: "Engelbert Humperdinck", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 2, duration: 198, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=WOu_GqJwfbc" },
   { title: "WKRP in Cincinnati Theme", artist: "Steve Carlisle", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 2, duration: 176, bpm: null, karaokeProvider: "MEE Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=OZeca7lvSME" },
   { title: "Folsom Prison Blues", artist: "Johnny Cash", performer: "Shane", genre: "Country", decade: "50s", timesPerformed: 2, duration: 166, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=IetpiGyuxsE" },
   { title: "Another Somebody Done Somebody Wrong Song", artist: "B.J. Thomas", performer: "Shane", genre: "Country", decade: "70s", timesPerformed: 2, duration: 218, bpm: null, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=2gGPabo41fc" },
-  { title: "Midnight Special", artist: "Leadbelly", performer: "Shane", genre: "Folk Rock", decade: "60s", timesPerformed: 2, duration: 272, bpm: null, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=0U6FYDGR5js" },
+  { title: "Midnight Special", artist: "Leadbelly", performer: "Shane", genre: "Folk Rock", decade: "60s", timesPerformed: 2, duration: 272, bpm: null, startOffset: 12, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=0U6FYDGR5js" },
   { title: "All You Ever Do Is Bring Me Down", artist: "The Mavericks", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 2, duration: 238, bpm: null, karaokeProvider: "EasyKaraoke", karaokeUrl: "https://www.youtube.com/watch?v=7JkU6GYSWWs" },
   { title: "Guess That's Why They Call It the Blues", artist: "Elton John", performer: "Shane", genre: "Pop", decade: "80s", timesPerformed: 2, duration: 302, bpm: null, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=sp_Y4BzGy3c" },
   { title: "Quando Quando Quando", artist: "Engelbert Humperdinck", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 2, duration: 217, bpm: null, karaokeProvider: "Vocal Star Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=Gywoo_eLpj0" },
@@ -745,15 +748,15 @@ const songs = [
   { title: "Here for a Good Time", artist: "Trooper", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: 211, bpm: null, karaokeProvider: "littlemacdjservices", karaokeUrl: "https://www.youtube.com/watch?v=HLCKgpuRQsg" },
   { title: "Authority Song", artist: "John Mellencamp", performer: "Shane", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: 241, bpm: null, karaokeProvider: "Let's Sing Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=dHnXeu3T8uo" },
   { title: "Babe", artist: "Styx", performer: "Shane", genre: "Classic Rock", decade: "80s", timesPerformed: 1, duration: 245, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=RPFrHdOJS84" },
-  { title: "You Got It", artist: "Roy Orbison", performer: "Shane", genre: "Classic Rock", decade: "80s", timesPerformed: 1, duration: 218, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=WYNgRNCi6ZE" },
+  { title: "You Got It", artist: "Roy Orbison", performer: "Shane", genre: "Classic Rock", decade: "80s", timesPerformed: 1, duration: 218, bpm: null, startOffset: 4, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=WYNgRNCi6ZE" },
   { title: "Words", artist: "Bee Gees", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 1, duration: 208, bpm: null, karaokeProvider: "Pinoy Videoke Tambayan", karaokeUrl: "https://www.youtube.com/watch?v=wvGHafielUo" },
   { title: "How Deep Is Your Love", artist: "Bee Gees", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 1, duration: 224, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=iXYKvkDtA3M" },
   { title: "Before the Next Teardrop Falls", artist: "Freddy Fender", performer: "Shane", genre: "Country", decade: "70s", timesPerformed: 1, duration: 160, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=djvbmvXX4rQ" },
-  { title: "Stuck in the Middle With You", artist: "Stealers Wheel", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: 211, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=raBYl43d_pw" },
+  { title: "Stuck in the Middle With You", artist: "Stealers Wheel", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: 211, bpm: null, startOffset: 3, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=raBYl43d_pw" },
   { title: "Hooked on a Feeling", artist: "Blue Swede", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 1, duration: 183, bpm: null, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=dO38S0ss12E" },
   { title: "Saturday Night", artist: "Bay City Rollers", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 1, duration: 201, bpm: null, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=TNbzRefJ6VY" },
   { title: "Maggie May", artist: "Rod Stewart", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: 325, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=dpy1Lj2DELA" },
-  { title: "Philadelphia Freedom", artist: "Elton John", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 1, duration: 341, bpm: null, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=6VRdFHVhTLI" },
+  { title: "Philadelphia Freedom", artist: "Elton John", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 1, duration: 341, bpm: null, startOffset: 5, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=6VRdFHVhTLI" },
   { title: "She Ain't Crying Anymore", artist: "Billy Ray Cyrus", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 1, duration: 208, bpm: null, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=HcLwRPvk5Mg" },
   { title: "On the Dark Side", artist: "John Cafferty", performer: "Shane", genre: "Classic Rock", decade: "80s", timesPerformed: 1, duration: 177, bpm: null, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=obGgZUVuVMU" },
   { title: "Summertime Blues", artist: "Eddie Cochran", performer: "Shane", genre: "Classic Rock", decade: "50s", timesPerformed: 1, duration: 122, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=7nT8CFAPgCw" },
@@ -770,7 +773,7 @@ const songs = [
   { title: "The Phantom of the Opera", artist: "Andrew Lloyd Webber", performer: "Shane", genre: "Musical", decade: "80s", timesPerformed: 0, duration: 266, bpm: null, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=Uq0QnsQf41s" },
 
   { title: "My Maria", artist: "Brooks & Dunn", performer: "Shane", genre: "Country", decade: "90s", timesPerformed: 0, duration: 213, bpm: null, karaokeProvider: "EasyKaraoke", karaokeUrl: "https://www.youtube.com/watch?v=tHaKafssVBU" },
-  { title: "I'll Never Fall in Love Again", artist: "Tom Jones", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 0, duration: 247, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=CYskGGyzccY" },
+  { title: "I'll Never Fall in Love Again", artist: "Tom Jones", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 0, duration: 247, bpm: null, startOffset: 3, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=CYskGGyzccY" },
   { title: "Delilah", artist: "Tom Jones", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 0, duration: 208, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=R4_x2a-4RwQ" },
   // DUETS & GROUP
   { title: "This Train Don't Stop There Anymore", artist: "Elton John", performer: "Shane", genre: "Pop", decade: "00s", timesPerformed: 0, duration: 288, bpm: null, karaokeProvider: "MrEntertainerKaraoke", karaokeUrl: "https://www.youtube.com/watch?v=AuevVO5sB7g" },
@@ -779,7 +782,7 @@ const songs = [
   { title: "Tie a Yellow Ribbon 'Round the Old Oak Tree", artist: "Tony Orlando & Dawn", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 0, duration: 206, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=SFl808SyhCE" },
   { title: "Sweet City Woman", artist: "The Stampeders", performer: "Shane", genre: "Country", decade: "70s", timesPerformed: 0, duration: 221, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=K0TLtsGHPBw" },
   { title: "Mull of Kintyre", artist: "Wings", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 0, duration: 300, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=f67GOG8CoPM" },
-  { title: "Beautiful Sunday", artist: "Daniel Boone", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 0, duration: 210, bpm: null, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=IGBT2nqKZWQ" },
+  { title: "Beautiful Sunday", artist: "Daniel Boone", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 0, duration: 210, bpm: null, startOffset: 11, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=IGBT2nqKZWQ" },
   { title: "Wasted Days and Wasted Nights", artist: "Freddy Fender", performer: "Shane", genre: "Country", decade: "70s", timesPerformed: 0, duration: 175, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=jFxvGq29SW0" },
   { title: "It's Hard to Be Humble", artist: "Mac Davis", performer: "Shane", genre: "Country", decade: "80s", timesPerformed: 0, duration: 219, bpm: 130, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=lKXP6gAoGRA" },
   { title: "Crying", artist: "Roy Orbison", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 0, duration: 179, bpm: 72, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=9B6sjWKJO2Q" },
@@ -789,19 +792,19 @@ const songs = [
   { title: "Bat Out of Hell", artist: "Meat Loaf", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 0, duration: 493, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=_5TCSy6bUiw" },
   { title: "Say You'll Stay Until Tomorrow", artist: "Tom Jones", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 0, duration: 225, bpm: null, karaokeProvider: "EasyKaraoke", karaokeUrl: "https://www.youtube.com/watch?v=qk1oCP_RUTM" },
   { title: "Release Me", artist: "Engelbert Humperdinck", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 0, duration: 206, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=Ix_Lonrz0Jk" },
-  { title: "The Way It Used to Be", artist: "Engelbert Humperdinck", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 0, duration: 178, bpm: 68, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=Ci9O5BVhKug" },
+  { title: "The Way It Used to Be", artist: "Engelbert Humperdinck", performer: "Shane", genre: "Pop", decade: "60s", timesPerformed: 0, duration: 178, bpm: 68, startOffset: 4, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=Ci9O5BVhKug" },
   { title: "Love Grows (Where My Rosemary Goes)", artist: "Edison Lighthouse", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 0, duration: 180, bpm: 120, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=Md_yxOqKYSk" },
 
   { title: "If I Had a Million Dollars", artist: "Barenaked Ladies", performer: "Duet", performerDetail: "Shane & Albert", genre: "Alternative", decade: "90s", timesPerformed: 4, duration: 265, bpm: null, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=OW_mkZF-RQQ" },
-  { title: "Handle with Care", artist: "Traveling Wilburys", performer: "Duet", performerDetail: "All Three", genre: "Classic Rock", decade: "80s", timesPerformed: 2, duration: 193, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=GOp5a09tgi0" },
+  { title: "Handle with Care", artist: "Traveling Wilburys", performer: "Duet", performerDetail: "All Three", genre: "Classic Rock", decade: "80s", timesPerformed: 2, duration: 193, bpm: null, startOffset: 4, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=GOp5a09tgi0" },
   { title: "I'm Gonna Be (500 Miles)", artist: "The Proclaimers", performer: "Duet", performerDetail: "Shane & Albert", genre: "Alternative", decade: "80s", timesPerformed: 2, duration: 221, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=22hT_usORWI" },
-  { title: "Love Me Do", artist: "The Beatles", performer: "Duet", performerDetail: "Albert & Shane", genre: "Classic Rock", decade: "60s", timesPerformed: 2, duration: 149, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=UKm60C-kPIs" },
+  { title: "Love Me Do", artist: "The Beatles", performer: "Duet", performerDetail: "Albert & Shane", genre: "Classic Rock", decade: "60s", timesPerformed: 2, duration: 149, bpm: null, startOffset: 3, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=UKm60C-kPIs" },
   { title: "To All the Girls", artist: "Willie Nelson & Julio Iglesias", performer: "Duet", performerDetail: "Shane & Albert", genre: "Country", decade: "80s", timesPerformed: 1, duration: 212, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=IIeQBPKjXtU" },
   { title: "You Don't Bring Me Flowers", artist: "Neil Diamond & Barbra Streisand", performer: "Duet", performerDetail: "Jim & Albert", genre: "Pop", decade: "70s", timesPerformed: 1, duration: 190, bpm: null, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=jY0-ifhubYM" },
   { title: "I Am a Man of Constant Sorrow", artist: "Soggy Bottom Boys", performer: "Duet", performerDetail: "All Three (Jim lead)", genre: "Folk Rock", decade: "00s", timesPerformed: 1, duration: 264, bpm: null, karaokeProvider: "KaraFun", karaokeUrl: "https://www.youtube.com/watch?v=Q9fF9kSdDzU" },
   { title: "End of the Line", artist: "Traveling Wilburys", performer: "Duet", performerDetail: "All Three", genre: "Classic Rock", decade: "80s", timesPerformed: 1, duration: 210, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=W5dG38Rvy_Q" },
   { title: "Elvira", artist: "Oak Ridge Boys", performer: "Duet", performerDetail: "All Three", genre: "Country", decade: "80s", timesPerformed: 0, duration: 232, bpm: 120, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=qLRCu4F_1Tg" },
-  { title: "Help!", artist: "The Beatles", performer: "Duet", performerDetail: "All Three", genre: "Classic Rock", decade: "60s", timesPerformed: 0, duration: 153, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=syT2eAP08Q0" },
+  { title: "Help!", artist: "The Beatles", performer: "Duet", performerDetail: "All Three", genre: "Classic Rock", decade: "60s", timesPerformed: 0, duration: 153, bpm: null, startOffset: 6, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=syT2eAP08Q0" },
   { title: "Ticket to Ride", artist: "The Beatles", performer: "Duet", performerDetail: "Shane & Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 0, duration: 204, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=L-1yYQfqGq8" },
   { title: "My Own Backyard", artist: "Burton Cummings", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 0, duration: 220, bpm: null, karaokeProvider: null, karaokeUrl: null },
   { title: "My Own Backyard", artist: "Burton Cummings", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 0, duration: 220, bpm: null, karaokeProvider: null, karaokeUrl: null },
@@ -1230,7 +1233,7 @@ function renderLibrary() {
   document.getElementById('library-body').innerHTML = data.map(s => `
     <tr>
       <td>
-        <div class="song-title">${s.karaokeUrl ? `<a href="${s.karaokeUrl}" target="_blank" style="color:inherit;text-decoration:underline dotted;cursor:pointer;">${s.title}</a>` : s.title}${s.note ? ' <span title="'+s.note+'" style="color:var(--muted);font-size:11px">⚠️</span>' : ''}</div>
+        <div class="song-title">${s.karaokeUrl ? `<a href="${s.karaokeUrl}${s.startOffset ? '&t=' + s.startOffset + 's' : ''}" target="_blank" style="color:inherit;text-decoration:underline dotted;cursor:pointer;">${s.title}</a>` : s.title}${s.note ? ' <span title="'+s.note+'" style="color:var(--muted);font-size:11px">⚠️</span>' : ''}</div>
       </td>
       <td><span class="song-artist">${s.artist}</span></td>
       <td><span class="performer-tag ${s.performer}">${s.performerDetail || s.performer}</span></td>
@@ -1293,6 +1296,7 @@ function buildShowOutline() {
   document.getElementById('clear-btn').style.display = '';
   document.getElementById('finalize-btn').style.display = '';
   document.getElementById('print-btn').style.display = '';
+  document.getElementById('export-btn').style.display = '';
 
   // Default picker to first checked performer
   if (document.getElementById('p-albert').checked) activePicker = 'Albert';
@@ -1489,7 +1493,7 @@ function renderOutline() {
           <span class="set-num">${i + 1}</span>
           <span class="performer-tag ${sg.performer}" style="min-width:58px;text-align:center;font-size:11px">${label}</span>
           <div class="set-song-info" style="flex:1">
-            <div class="set-song-title">${sg.title}</div>
+            <div class="set-song-title">${sg.karaokeUrl ? `<a href="${sg.karaokeUrl}${sg.startOffset ? '&t=' + sg.startOffset + 's' : ''}" target="_blank" onclick="event.stopPropagation()" style="color:inherit;text-decoration:underline dotted;cursor:pointer;">${sg.title}</a>` : sg.title}</div>
             <div class="set-song-artist">${sg.artist}</div>
           </div>
           <span class="set-song-dur">${dur}</span>
@@ -1921,6 +1925,41 @@ function dismissResumeBanner() {
 // ═══════════════════════════════════════════
 renderLibrary();
 checkForSavedSetlist();
+
+function exportSetlistJSON() {
+  const raw = localStorage.getItem(SETLIST_STORAGE_KEY);
+  if (!raw) { showToast('No setlist to export.'); return; }
+  const data = JSON.parse(raw);
+  const showName = (data.settings && data.settings.showName) ? data.settings.showName : 'Setlist';
+  const blob = new Blob([raw], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Three Amigos — ${showName}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Setlist exported!');
+}
+
+function importSetlistJSON(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.slots) { showToast('Invalid setlist file.'); return; }
+      localStorage.setItem(SETLIST_STORAGE_KEY, JSON.stringify(data));
+      window.__savedSetlistData = data;
+      resumeSavedSetlist();
+      showToast('Setlist imported! ✓');
+    } catch(err) {
+      showToast('Could not read file — is it a valid setlist JSON?');
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
+}
 
 // ═══════════════════════════════════════════
 // VIEW MODE — ?view=library hides all tabs
