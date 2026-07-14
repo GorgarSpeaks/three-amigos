@@ -18,6 +18,8 @@
     --jim-bg: rgba(78,203,113,0.12);
     --shane: #f5924a;
     --shane-bg: rgba(245,146,74,0.12);
+    --catherine: #ff6b9d;
+    --catherine-bg: rgba(255,107,157,0.12);
     --duet: #c678dd;
     --duet-bg: rgba(198,120,221,0.12);
     --accent: #4a9eff;
@@ -38,6 +40,7 @@
   .pill.albert { background: var(--albert-bg); color: var(--albert); border: 1px solid var(--albert); }
   .pill.jim { background: var(--jim-bg); color: var(--jim); border: 1px solid var(--jim); }
   .pill.shane { background: var(--shane-bg); color: var(--shane); border: 1px solid var(--shane); }
+  .pill.catherine { background: var(--catherine-bg); color: var(--catherine); border: 1px solid var(--catherine); }
 
   /* Tabs */
   nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; gap: 0; }
@@ -81,6 +84,7 @@
   .performer-tag.Albert { background: var(--albert-bg); color: var(--albert); }
   .performer-tag.Jim { background: var(--jim-bg); color: var(--jim); }
   .performer-tag.Shane { background: var(--shane-bg); color: var(--shane); }
+  .performer-tag.Catherine { background: var(--catherine-bg); color: var(--catherine); }
   .performer-tag.Duet { background: var(--duet-bg); color: var(--duet); }
   .decade-tag { background: var(--surface2); border-radius: 4px; color: var(--muted); font-size: 11px; padding: 2px 7px; }
 
@@ -221,6 +225,7 @@
   .show-perf-header.Albert { background: var(--albert-bg); color: var(--albert); border-bottom: 1px solid rgba(74,158,255,0.3); }
   .show-perf-header.Jim { background: var(--jim-bg); color: var(--jim); border-bottom: 1px solid rgba(78,203,113,0.3); }
   .show-perf-header.Shane { background: var(--shane-bg); color: var(--shane); border-bottom: 1px solid rgba(245,146,74,0.3); }
+  .show-perf-header.Catherine { background: var(--catherine-bg); color: var(--catherine); border-bottom: 1px solid rgba(255,107,157,0.3); }
   .show-perf-header.Duet { background: var(--duet-bg); color: var(--duet); border-bottom: 1px solid rgba(198,120,221,0.3); }
   .show-song-item { border-bottom: 1px solid var(--border); padding: 7px 16px; }
   .show-song-item:last-child { border-bottom: none; }
@@ -235,7 +240,7 @@
 <header>
   <h1>🎤 Three <span>Amigos</span> — Set List Creator</h1>
   <div class="header-right">
-    <div class="version-badge">v<span>1.06</span> &nbsp;·&nbsp; Jun 13, 2026</div>
+    <div class="version-badge">v<span>1.07</span> &nbsp;·&nbsp; Jul 14, 2026</div>
     <div class="performer-pills">
       <span class="pill albert">Albert</span>
       <span class="pill jim">Jim</span>
@@ -266,6 +271,7 @@
           <option value="Albert">Albert</option>
           <option value="Jim">Jim</option>
           <option value="Shane">Shane</option>
+          <option value="Catherine">Catherine</option>
           <option value="Duet">Duets / Group</option>
         </select>
         <select id="filter-genre" onchange="renderLibrary()">
@@ -345,6 +351,7 @@
               <label><input type="checkbox" id="p-albert" checked> <span style="color:var(--albert)">Albert</span></label>
               <label><input type="checkbox" id="p-jim" checked> <span style="color:var(--jim)">Jim</span></label>
               <label><input type="checkbox" id="p-shane" checked> <span style="color:var(--shane)">Shane</span></label>
+              <label><input type="checkbox" id="p-catherine" checked> <span style="color:var(--catherine)">Catherine</span></label>
             </div>
           </div>
           <div class="form-group">
@@ -410,6 +417,7 @@
           <option value="Albert">Albert</option>
           <option value="Jim">Jim</option>
           <option value="Shane">Shane</option>
+          <option value="Catherine">Catherine</option>
         </select>
         <select id="try-filter-genre" onchange="renderTryList()">
           <option value="">All Genres</option>
@@ -808,6 +816,18 @@ const songs = [
   { title: "Ticket to Ride", artist: "The Beatles", performer: "Duet", performerDetail: "Shane & Albert", genre: "Classic Rock", decade: "60s", timesPerformed: 0, duration: 204, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=L-1yYQfqGq8" },
   { title: "My Own Backyard", artist: "Burton Cummings", performer: "Jim", genre: "Classic Rock", decade: "70s", timesPerformed: 0, duration: 220, bpm: null, karaokeProvider: null, karaokeUrl: null },
   { title: "My Own Backyard", artist: "Burton Cummings", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 0, duration: 220, bpm: null, karaokeProvider: null, karaokeUrl: null },
+
+  { title: "— FILLER —", artist: "Placeholder", performer: "Catherine", genre: "Country", decade: "70s", timesPerformed: 0, duration: 210, bpm: null, karaokeProvider: null, karaokeUrl: null },
+  { title: "Believe", artist: "Cher", performer: "Catherine", genre: "Pop", decade: "90s", timesPerformed: 0, duration: 239, bpm: 133, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=s1DWvYZem_o" },
+  { title: "I'm Alive", artist: "Celine Dion", performer: "Catherine", genre: "Pop", decade: "00s", timesPerformed: 0, duration: 211, bpm: 102, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=MaZRM6QP3jQ" },
+  { title: "Alone", artist: "Heart", performer: "Catherine", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 0, duration: 219, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=q11rRc5t25w" },
+
+  { title: "Shallow", artist: "Lady Gaga & Bradley Cooper", performer: "Duet", performerDetail: "Shane & Catherine", genre: "Pop", decade: "10s", timesPerformed: 0, duration: 215, bpm: 96, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=pOp3ZwUhLjU" },
+  { title: "The Prayer", artist: "Celine Dion & Andrea Bocelli", performer: "Duet", performerDetail: "Shane & Catherine", genre: "Pop", decade: "90s", timesPerformed: 0, duration: 267, bpm: 81, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=jDbOogLHUqE" },
+  { title: "Crying", artist: "Roy Orbison", performer: "Duet", performerDetail: "Shane & Catherine", genre: "Pop", decade: "60s", timesPerformed: 0, duration: 179, bpm: 72, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=_CvjAzruPQ0" },
+  { title: "Running Scared", artist: "Roy Orbison", performer: "Duet", performerDetail: "Shane & Catherine", genre: "Pop", decade: "60s", timesPerformed: 0, duration: 132, bpm: null, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=Q9V2zpKRoho" },
+  { title: "Summer Nights", artist: "John Travolta & Olivia Newton-John", performer: "Duet", performerDetail: "Shane & Catherine", genre: "Pop", decade: "70s", timesPerformed: 0, duration: 215, bpm: 124, karaokeProvider: "Sing King Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=EVNFbhrJC-o" },
+  { title: "Happy Birthday (Acapella)", artist: "Traditional", performer: "Duet", performerDetail: "Group", genre: "Traditional", decade: "", timesPerformed: 0, duration: 20, bpm: null, karaokeProvider: null, karaokeUrl: null },
 ];
 
 // De-duplicate (remove the accidental duplicate "In the Summertime" added as placeholder)
@@ -1137,7 +1157,7 @@ function selectShow(idx) {
 
 function renderShowDetail(idx) {
   const show = showsData[idx];
-  const performerColors = { Albert: 'var(--albert)', Jim: 'var(--jim)', Shane: 'var(--shane)', Duet: 'var(--duet)' };
+  const performerColors = { Albert: 'var(--albert)', Jim: 'var(--jim)', Shane: 'var(--shane)', Catherine: 'var(--catherine)', Duet: 'var(--duet)' };
   const songCount = Object.values(show.songs).reduce((acc, arr) => acc + arr.length, 0);
   const performerPills = show.performers.map(p =>
     `<span class="meta-pill" style="color:${performerColors[p]}">${p}</span>`
@@ -1154,7 +1174,7 @@ function renderShowDetail(idx) {
   </div>
   <div class="show-songs-grid">`;
 
-  const order = ['Albert', 'Jim', 'Shane', 'Duet'];
+  const order = ['Albert', 'Jim', 'Shane', 'Catherine', 'Duet'];
   order.forEach(performer => {
     const list = show.songs[performer];
     if (!list || list.length === 0) return;
@@ -1220,12 +1240,14 @@ function renderLibrary() {
   const albert = data.filter(s => s.performer === 'Albert').length;
   const jim = data.filter(s => s.performer === 'Jim').length;
   const shane = data.filter(s => s.performer === 'Shane').length;
+  const catherine = data.filter(s => s.performer === 'Catherine').length;
   const duet = data.filter(s => s.performer === 'Duet').length;
   document.getElementById('stats-bar').innerHTML = `
     <div class="stat">Total: <strong>${data.length}</strong></div>
     <div class="stat" style="color:var(--albert)">Albert: <strong>${albert}</strong></div>
     <div class="stat" style="color:var(--jim)">Jim: <strong>${jim}</strong></div>
     <div class="stat" style="color:var(--shane)">Shane: <strong>${shane}</strong></div>
+    <div class="stat" style="color:var(--catherine)">Catherine: <strong>${catherine}</strong></div>
     <div class="stat" style="color:var(--duet)">Duets: <strong>${duet}</strong></div>
   `;
 
@@ -1302,6 +1324,7 @@ function buildShowOutline() {
   if (document.getElementById('p-albert').checked) activePicker = 'Albert';
   else if (document.getElementById('p-jim').checked) activePicker = 'Jim';
   else if (document.getElementById('p-shane').checked) activePicker = 'Shane';
+  else if (document.getElementById('p-catherine').checked) activePicker = 'Catherine';
 
   renderPickerBtns();
   renderSongPicker();
@@ -1313,6 +1336,7 @@ function renderPickerBtns() {
   if (document.getElementById('p-albert').checked) performers.push('Albert');
   if (document.getElementById('p-jim').checked) performers.push('Jim');
   if (document.getElementById('p-shane').checked) performers.push('Shane');
+  if (document.getElementById('p-catherine').checked) performers.push('Catherine');
   performers.push('Duet');
 
   document.getElementById('picker-btns').innerHTML = performers.map(p => {
@@ -1857,7 +1881,8 @@ function saveSetlistToStorage() {
     performers: {
       albert: document.getElementById('p-albert').checked,
       jim: document.getElementById('p-jim').checked,
-      shane: document.getElementById('p-shane').checked
+      shane: document.getElementById('p-shane').checked,
+      catherine: document.getElementById('p-catherine').checked
     }
   };
   const slots = showSlots.map(s => ({ setNum: s.setNum, slotNum: s.slotNum, songTitle: s.song ? s.song.title : null }));
@@ -1896,6 +1921,7 @@ function resumeSavedSetlist() {
   document.getElementById('p-albert').checked = s.performers.albert;
   document.getElementById('p-jim').checked = s.performers.jim;
   document.getElementById('p-shane').checked = s.performers.shane;
+  document.getElementById('p-catherine').checked = s.performers.catherine ?? true;
   buildShowOutline();
   let restored = 0;
   data.slots.forEach(saved => {
