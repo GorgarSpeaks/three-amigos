@@ -137,7 +137,10 @@
   .set-song.sortable-ghost { background: rgba(74,158,255,0.1) !important; outline: 1px dashed var(--accent); border-radius: 4px; }
 
   @media print {
-    header, nav, .card:not(#setlist-card), .gen-left { display: none !important; }
+    header, nav, .gen-left { display: none !important; }
+    .card { display: none !important; }
+    #setlist-card .card { display: block !important; }
+    .print-btn { display: none !important; }
     body { background: #fff; color: #000; }
     .setlist-output { border: none; }
     .set-header { background: #eee; }
@@ -1612,16 +1615,19 @@ function initSortable() {
       ghostClass: 'sortable-ghost',
       dragClass: 'sortable-drag',
       onEnd(evt) {
-        // Get ordered slot IDs from DOM after the drag
+        // Get ordered slot IDs from DOM after the drag — this is the new visual order
         const newOrder = [...block.querySelectorAll('.set-song[data-slot-id]')]
           .map(el => parseInt(el.dataset.slotId));
-        // Get the songs that were in this set, in old order
+        // Slot objects for this set, in their fixed position order
         const setSlots = showSlots.filter(s => s.setNum === setNum);
-        const oldSongs = setSlots.map(s => s.song);
-        // Remap: assign songs to slots in new DOM order
-        newOrder.forEach((slotId, i) => {
-          const slot = showSlots.find(s => s.id === slotId);
-          if (slot) slot.song = oldSongs[i] !== undefined ? oldSongs[i] : null;
+        // Snapshot each slot's song by its id before reassigning anything
+        const songById = {};
+        setSlots.forEach(s => { songById[s.id] = s.song; });
+        // Position i (a fixed slot) now holds whichever song belongs to the
+        // slot id that the drag placed at position i
+        setSlots.forEach((slot, i) => {
+          const draggedId = newOrder[i];
+          slot.song = (draggedId !== undefined && songById[draggedId] !== undefined) ? songById[draggedId] : null;
         });
         saveSetlistToStorage();
         renderSetlistOutput();
