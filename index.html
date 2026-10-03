@@ -59,6 +59,10 @@
   .filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
   .filters input, .filters select { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; padding: 8px 14px; outline: none; }
   .filters input { flex: 1; min-width: 200px; }
+  .search-wrap { position: relative; display: flex; flex: 1; min-width: 200px; }
+  .search-wrap input { flex: 1; width: 100%; padding-right: 38px !important; }
+  .search-clear { display: none; position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; align-items: center; justify-content: center; border: none; border-radius: 50%; background: transparent; color: var(--muted); font-size: 22px; line-height: 1; cursor: pointer; padding: 0; }
+  .search-clear:hover { color: var(--text); background: var(--border); }
   .filters input:focus, .filters select:focus { border-color: var(--accent); }
   .filters select option { background: var(--surface2); }
 
@@ -167,6 +171,8 @@
     /* Filters: stack vertically */
     .filters { flex-direction: column; gap: 8px; }
     .filters input, .filters select { min-width: unset; width: 100%; font-size: 16px; min-height: 44px; }
+    .search-wrap { min-width: unset; width: 100%; }
+    .search-clear { width: 36px; height: 36px; font-size: 26px; }
 
     /* Stats bar: wrap tighter */
     .stats-bar { gap: 10px; }
@@ -243,7 +249,7 @@
 <header>
   <h1>🎤 Three <span>Amigos</span> — Set List Creator</h1>
   <div class="header-right">
-    <div class="version-badge">v<span>1.18</span> &nbsp;·&nbsp; Oct 3, 2026</div>
+    <div class="version-badge">v<span>1.19</span> &nbsp;·&nbsp; Oct 3, 2026</div>
     <div class="performer-pills">
       <span class="pill albert">Albert</span>
       <span class="pill jim">Jim</span>
@@ -268,7 +274,7 @@
   <div id="tab-library">
     <div class="card">
       <div class="filters">
-        <input type="text" id="search" placeholder="Search songs or artists…" oninput="renderLibrary()">
+        <div class="search-wrap"><input type="text" id="search" placeholder="Search songs or artists…" oninput="renderLibrary()"><button type="button" class="search-clear" aria-label="Clear search" title="Clear search">&times;</button></div>
         <select id="filter-performer" onchange="renderLibrary()">
           <option value="">All Performers</option>
           <option value="Albert">Albert</option>
@@ -374,9 +380,9 @@
             <span id="slot-indicator" style="font-size:12px;color:var(--muted)"></span>
           </div>
           <div id="picker-btns" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"></div>
-          <input type="text" id="picker-search" placeholder="Search songs…" oninput="renderSongPicker()"
+          <div class="search-wrap" style="margin-bottom:10px"><input type="text" id="picker-search" placeholder="Search songs…" oninput="renderSongPicker()"
             style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;
-                   color:var(--text);font-size:14px;padding:8px 12px;outline:none;margin-bottom:10px">
+                   color:var(--text);font-size:14px;padding:8px 12px;outline:none"><button type="button" class="search-clear" aria-label="Clear search" title="Clear search">&times;</button></div>
           <div id="song-picker-list" style="max-height:400px;overflow-y:auto"></div>
         </div>
       </div>
@@ -414,7 +420,7 @@
         <p>Songs we want to try at practice — not yet in the regular rotation. Tell the assistant to add a song anytime, via chat or your Drafts inbox. Click "Mark Adopted" once a song makes it into the library.</p>
       </div>
       <div class="filters">
-        <input type="text" id="try-search" placeholder="Search songs or artists…" oninput="renderTryList()">
+        <div class="search-wrap"><input type="text" id="try-search" placeholder="Search songs or artists…" oninput="renderTryList()"><button type="button" class="search-clear" aria-label="Clear search" title="Clear search">&times;</button></div>
         <select id="try-filter-suggested" onchange="renderTryList()">
           <option value="">All Members</option>
           <option value="Albert">Albert</option>
@@ -1421,7 +1427,7 @@ function renderPickerBtns() {
 
 function setActivePicker(p) {
   activePicker = p;
-  if (document.getElementById('picker-search')) document.getElementById('picker-search').value = '';
+  if (document.getElementById('picker-search')) { document.getElementById('picker-search').value = ''; if (typeof syncSearchClear === 'function') syncSearchClear(); }
   renderPickerBtns();
   renderSongPicker();
 }
@@ -2066,6 +2072,24 @@ function importSetlistJSON(input) {
     document.querySelector('nav').style.display = 'none';
   }
 })();
+
+// Clear (X) button inside search boxes
+function syncSearchClear() {
+  document.querySelectorAll('.search-wrap').forEach(w => {
+    const i = w.querySelector('input'), b = w.querySelector('.search-clear');
+    if (i && b) b.style.display = i.value ? 'flex' : 'none';
+  });
+}
+document.querySelectorAll('.search-wrap').forEach(w => {
+  const i = w.querySelector('input'), b = w.querySelector('.search-clear');
+  i.addEventListener('input', syncSearchClear);
+  b.addEventListener('click', () => {
+    i.value = '';
+    i.dispatchEvent(new Event('input', { bubbles: true }));
+    i.focus();
+  });
+});
+syncSearchClear();
 </script>
 </body>
 </html>
