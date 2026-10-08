@@ -249,7 +249,7 @@
 <header>
   <h1>🎤 Three <span>Amigos</span> — Set List Creator</h1>
   <div class="header-right">
-    <div class="version-badge">v<span>1.29</span> &nbsp;·&nbsp; Oct 8, 2026</div>
+    <div class="version-badge">v<span>1.30</span> &nbsp;·&nbsp; Oct 8, 2026</div>
     <div class="performer-pills">
       <span class="pill albert">Albert</span>
       <span class="pill jim">Jim</span>
@@ -1640,30 +1640,36 @@ function renderOutline() {
 function initSortable() {
   if (typeof Sortable === 'undefined') return;
   document.querySelectorAll('#setlist-output .set-block').forEach(block => {
-    const setNum = parseInt(block.querySelector('.set-header span')?.textContent?.replace('Set ','')) || 0;
     new Sortable(block, {
+      group: 'setlist-sets',   // lets songs be dragged between sets
       animation: 150,
       handle: '.drag-handle',
       draggable: '.set-song',
       ghostClass: 'sortable-ghost',
       dragClass: 'sortable-drag',
-      onEnd(evt) {
-        // Get ordered slot IDs from DOM after the drag — this is the new visual order
-        const newOrder = [...block.querySelectorAll('.set-song[data-slot-id]')]
-          .map(el => parseInt(el.dataset.slotId));
-        // Slot objects for this set, in their fixed position order
-        const setSlots = showSlots.filter(s => s.setNum === setNum);
-        // Snapshot each slot's song by its id before reassigning anything
+      onEnd() {
+        // Snapshot every slot's song by id before reassigning anything
         const songById = {};
-        setSlots.forEach(s => { songById[s.id] = s.song; });
-        // Position i (a fixed slot) now holds whichever song belongs to the
-        // slot id that the drag placed at position i
-        setSlots.forEach((slot, i) => {
-          const draggedId = newOrder[i];
-          slot.song = (draggedId !== undefined && songById[draggedId] !== undefined) ? songById[draggedId] : null;
+        showSlots.forEach(s => { songById[s.id] = s.song; });
+        // Read the new visual order of every set straight from the DOM
+        const blocks = [...document.querySelectorAll('#setlist-output .set-block')];
+        blocks.forEach((blk, idx) => {
+          const setNum = idx + 1;
+          const songs = [...blk.querySelectorAll('.set-song[data-slot-id]')]
+            .map(el => songById[parseInt(el.dataset.slotId)])
+            .filter(sg => sg);
+          let setSlots = showSlots.filter(s => s.setNum === setNum).sort((x, y) => x.slotNum - y.slotNum);
+          // A set that received an extra song gets an extra slot
+          while (setSlots.length < songs.length) {
+            const ns = { id: Math.max(...showSlots.map(s => s.id)) + 1, setNum, slotNum: setSlots.length + 1, song: null };
+            showSlots.push(ns);
+            setSlots.push(ns);
+          }
+          setSlots.forEach((slot, i) => { slot.song = songs[i] || null; });
         });
+        showSlots.sort((x, y) => x.setNum - y.setNum || x.slotNum - y.slotNum);
         saveSetlistToStorage();
-        renderSetlistOutput();
+        renderOutline();
       }
     });
   });
