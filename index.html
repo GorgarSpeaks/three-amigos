@@ -249,7 +249,7 @@
 <header>
   <h1>🎤 Three <span>Amigos</span> — Set List Creator</h1>
   <div class="header-right">
-    <div class="version-badge">v<span>1.30</span> &nbsp;·&nbsp; Oct 8, 2026</div>
+    <div class="version-badge">v<span>1.31</span> &nbsp;·&nbsp; Oct 8, 2026</div>
     <div class="performer-pills">
       <span class="pill albert">Albert</span>
       <span class="pill jim">Jim</span>
@@ -1647,25 +1647,39 @@ function initSortable() {
       draggable: '.set-song',
       ghostClass: 'sortable-ghost',
       dragClass: 'sortable-drag',
-      onEnd() {
+      onEnd(evt) {
         // Snapshot every slot's song by id before reassigning anything
         const songById = {};
         showSlots.forEach(s => { songById[s.id] = s.song; });
-        // Read the new visual order of every set straight from the DOM
         const blocks = [...document.querySelectorAll('#setlist-output .set-block')];
-        blocks.forEach((blk, idx) => {
+        // Read each set's new visual order from the DOM. Empty slots keep their
+        // position (null), so a song dropped onto an empty slot stays there.
+        const entries = blocks.map(blk =>
+          [...blk.querySelectorAll('.set-song[data-slot-id]')]
+            .map(el => songById[parseInt(el.dataset.slotId)] || null));
+        const origCount = blocks.map((_, i) => showSlots.filter(s => s.setNum === i + 1).length);
+        // Moved between sets: leave an empty slot where the song came from,
+        // and absorb the extra item in the target set by using up one empty slot
+        if (evt.from !== evt.to) {
+          const fi = blocks.indexOf(evt.from), ti = blocks.indexOf(evt.to);
+          if (fi >= 0 && ti >= 0) {
+            entries[fi].splice(Math.min(evt.oldIndex, entries[fi].length), 0, null);
+            const t = entries[ti];
+            let rm = -1;
+            for (let k = evt.newIndex + 1; k < t.length; k++) if (!t[k]) { rm = k; break; }
+            if (rm < 0) for (let k = evt.newIndex - 1; k >= 0; k--) if (!t[k]) { rm = k; break; }
+            if (rm >= 0) t.splice(rm, 1);   // otherwise the set simply grows by one slot
+          }
+        }
+        entries.forEach((list, idx) => {
           const setNum = idx + 1;
-          const songs = [...blk.querySelectorAll('.set-song[data-slot-id]')]
-            .map(el => songById[parseInt(el.dataset.slotId)])
-            .filter(sg => sg);
           let setSlots = showSlots.filter(s => s.setNum === setNum).sort((x, y) => x.slotNum - y.slotNum);
-          // A set that received an extra song gets an extra slot
-          while (setSlots.length < songs.length) {
+          while (setSlots.length < list.length) {
             const ns = { id: Math.max(...showSlots.map(s => s.id)) + 1, setNum, slotNum: setSlots.length + 1, song: null };
             showSlots.push(ns);
             setSlots.push(ns);
           }
-          setSlots.forEach((slot, i) => { slot.song = songs[i] || null; });
+          setSlots.forEach((slot, i) => { slot.song = list[i] || null; });
         });
         showSlots.sort((x, y) => x.setNum - y.setNum || x.slotNum - y.slotNum);
         saveSetlistToStorage();
