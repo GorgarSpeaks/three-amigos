@@ -249,7 +249,7 @@
 <header>
   <h1>🎤 Three <span>Amigos</span> — Set List Creator</h1>
   <div class="header-right">
-    <div class="version-badge">v<span>1.39</span> &nbsp;·&nbsp; Nov 6, 2026</div>
+    <div class="version-badge">v<span>1.40</span> &nbsp;·&nbsp; Nov 6, 2026</div>
     <div class="performer-pills">
       <span class="pill albert">Albert</span>
       <span class="pill jim">Jim</span>
@@ -805,7 +805,7 @@ const songs = [
   { title: "Ring of Fire", artist: "Johnny Cash", performer: "Shane", genre: "Country", decade: "60s", timesPerformed: 1, duration: 169, bpm: null, startOffset: 4, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=QJDI7U4NOZw" },
   { title: "El Paso", artist: "Marty Robbins", performer: "Shane", genre: "Country", decade: "60s", timesPerformed: 1, duration: 274, bpm: null, startOffset: 4, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=KhIJ7J5WzaY" },
   { title: "What Are You Doing Sunday", artist: "Dawn", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 1, duration: 167, bpm: null, startOffset: 4, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=ayUEXWNXPKU" },
-  { title: "Walk of Life", artist: "Dire Straits", performer: "Shane", genre: "Classic Rock", decade: "80s", timesPerformed: 1, duration: 269, bpm: null, karaokeProvider: "EasyKaraoke", karaokeUrl: "https://www.youtube.com/watch?v=qIbzm0Rphe0" },
+  { title: "Walk of Life", artist: "Dire Straits", performer: "Shane", genre: "Classic Rock", decade: "80s", timesPerformed: 1, duration: 222, bpm: null, startOffset: 3, karaokeProvider: "Zoom Karaoke Official", karaokeUrl: "https://www.youtube.com/watch?v=1R2abdk_JJk" },
   { title: "The Boys in the Bright White Sports Car", artist: "Trooper", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 1, duration: 181, bpm: null, karaokeProvider: "Lost And Found Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=g4xYBCQM0b0" },
   { title: "You Might Think", artist: "The Cars", performer: "Shane", genre: "New Wave", decade: "80s", timesPerformed: 1, duration: 196, bpm: null, startOffset: 7, karaokeProvider: "DiamondDaveMusic", karaokeUrl: "https://www.youtube.com/watch?v=ALjjfVjQJV8" },
   { title: "Dancing in the Dark", artist: "Bruce Springsteen", performer: "Shane", genre: "80s Pop/Rock", decade: "80s", timesPerformed: 1, duration: 216, bpm: null, startOffset: 4, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=xv08o27_Nkw" },
@@ -870,6 +870,13 @@ const songs = [
   { title: "Paradise by the Dashboard Light", artist: "Meat Loaf", performer: "Shane", genre: "Rock", decade: "70s", timesPerformed: 1, duration: 462, bpm: 173, startOffset: 4, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=Hhab58CV1Ko" },
   { title: "I Guess That's Why They Call It the Blues", artist: "Elton John", performer: "Shane", genre: "Pop", decade: "80s", timesPerformed: 0, duration: 291, bpm: 121, karaokeProvider: "KaraFun Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=NhksbpxcTHI" },
   { title: "Lead Me, Guide Me", artist: "Elvis Presley", performer: "Shane", genre: "Classic Rock", decade: "70s", timesPerformed: 0, duration: 163, bpm: 84, startOffset: 3, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=X6jaBtjHXAc" },
+  { title: "Annie's Song", artist: "John Denver", performer: "Shane", genre: "Folk Rock", decade: "70s", timesPerformed: 0, duration: 180, bpm: null, startOffset: 4, karaokeProvider: "Zoom Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=HNoWxjTLP_E" },
+  { title: "A Woman Like You", artist: "Johnny Reid", performer: "Shane", genre: "Country", decade: "00s", timesPerformed: 0, duration: 225, bpm: 80, startOffset: 5, karaokeProvider: "Dancing Frog Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=9NE49_Dt51c" },
+  { title: "Candida", artist: "Tony Orlando & Dawn", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 0, duration: 198, bpm: 129, startOffset: 4, karaokeProvider: "Zoom Karaoke Official", karaokeUrl: "https://www.youtube.com/watch?v=AhRcc_3_UG8" },
+  { title: "The Great Pretender", artist: "The Platters", performer: "Shane", genre: "Pop", decade: "50s", timesPerformed: 0, duration: 172, bpm: 116, startOffset: 3, karaokeProvider: "Zoom Karaoke Official", karaokeUrl: "https://www.youtube.com/watch?v=0QlnBvbd8zo" },
+  { title: "You Shouldn't Kiss Me Like This", artist: "Toby Keith", performer: "Shane", genre: "Country", decade: "00s", timesPerformed: 0, duration: 225, bpm: 169, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=m8lwqchMUsY" },
+  { title: "Candle in the Wind", artist: "Elton John", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 0, duration: 233, bpm: 126, startOffset: 3, karaokeProvider: "Zoom Karaoke Official", karaokeUrl: "https://www.youtube.com/watch?v=Itlq8n9qYys" },
+  { title: "The One I Love", artist: "R.E.M.", performer: "Albert", genre: "Rock", decade: "80s", timesPerformed: 0, duration: 216, bpm: 128, startOffset: 5, karaokeProvider: "KaraokeOnVEVO", karaokeUrl: "https://www.youtube.com/watch?v=OxsK-QqVjuM" },
   { title: "Love Grows (Where My Rosemary Goes)", artist: "Edison Lighthouse", performer: "Shane", genre: "Pop", decade: "70s", timesPerformed: 0, duration: 180, bpm: 120, startOffset: 6, karaokeProvider: null, karaokeUrl: "https://www.youtube.com/watch?v=Md_yxOqKYSk" },
 
   { title: "If I Had a Million Dollars", artist: "Barenaked Ladies", performer: "Duet", performerDetail: "Shane & Albert", genre: "Alternative", decade: "90s", timesPerformed: 5, duration: 265, bpm: null, karaokeProvider: "Party Tyme Karaoke", karaokeUrl: "https://www.youtube.com/watch?v=OW_mkZF-RQQ" },
@@ -1899,7 +1906,7 @@ const durationData = {
   "All You Ever Do Is Bring Me Down": 188, "Guess That's Why They Call It the Blues": 309,
   "Quando Quando Quando": 176, "Knock Three Times": 188, "I'm Still Standing": 181,
   "Danny Boy": 210, "Stuck on You": 207, "Ring of Fire": 156, "El Paso": 299,
-  "What Are You Doing Sunday": 180, "Walk of Life": 251,
+  "What Are You Doing Sunday": 180, "Walk of Life": 222,
   "The Boys in the Bright White Sports Car": 196, "You Might Think": 194,
   "Dancing in the Dark": 242, "Red Red Wine": 187, "Footloose": 229,
   "The Longest Time": 222, "Here for a Good Time": 211, "Authority Song": 194,
